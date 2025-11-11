@@ -1,4 +1,6 @@
-
+<?php
+$schemas = \app\models\Tartalom::getContentSchemas();
+?>
 
                     <a href="/admin" data-menu="1" class="menu-item text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <!-- Heroicon name: outline/chart-bar -->
@@ -161,14 +163,15 @@
                             Blokkok
                         </a>
 
+                        <!--
                         <a href="/admin/sliders" data-menu="6.8" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                            <!-- Heroicon name: outline/chart-bar -->
+
                             <span class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" style="opacity:0;align-items: center; display: flex;justify-content: center;font-size: 140%;">
                                 <i class="fa-regular fa-align-center"></i>
                               </span>
                             Ajánló
                         </a>
-
+                        -->
 
                         <a href="/admin/email-templates" data-menu="6.6" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <!-- Heroicon name: outline/chart-bar -->
@@ -177,6 +180,28 @@
                               </span>
                             E-mailek
                         </a>
+
+                        <?php foreach ($schemas as $schemaName => $schema): ?>
+                            <?php
+                                if (substr($schemaName, 0, 1) === '_') {
+                                    continue;
+                                }
+                            ?>
+
+
+                            <?php
+                                $hash = substr(sha1($schemaName), 0, 8);
+                            ?>
+
+                            <a href="/admin/content-table?type=<?=urlencode($schemaName)?>" data-menu="6.<?=$hash?>" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                                <!-- Heroicon name: outline/chart-bar -->
+                                <span class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" style="opacity:0;align-items: center; display: flex;justify-content: center;font-size: 140%;">
+                                <i class="fa-regular fa-align-center"></i>
+                              </span>
+                                <?=$schemaName?>
+                            </a>
+
+                        <?php endforeach; ?>
 
                     </div>
 

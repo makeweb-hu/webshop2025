@@ -65,6 +65,12 @@ class AdminController extends \yii\web\Controller {
         return $this->render('tables/schedules_table');
     }
 
+    public function actionContentTable($type) {
+        return $this->render('tables/content-table', [
+            'type' => $type,
+        ]);
+    }
+
     public function actionQuestions() {
         return $this->render('tables/questions_table');
     }

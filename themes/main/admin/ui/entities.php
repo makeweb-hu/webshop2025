@@ -51,7 +51,6 @@ if ($no_edit ?? null) {
         ];
     }
 }
-
 ?>
 
 <div class="input-row" data-entities data-max="<?=$max ?? ''?>" data-entities-id="<?=$entitiesId?>"

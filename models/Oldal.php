@@ -131,7 +131,9 @@ class Oldal extends \yii\db\ActiveRecord
     public function columnViews() {
         return [
             'url' => function () {
-                return  '<small><span class="text-gray-400">' . Beallitasok::get('domain') . '</span>/<span class="font-medium">' . $this->url . '</span></small>';
+                $base = 'http://' . Beallitasok::get('domain');
+                $open = '<a href="'.$base.'/'.$this->url.'" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>';
+                return  '<small><span class="text-gray-400">' . Beallitasok::get('domain') . '</span>/<span class="font-medium">' . $this->url . ' ' . $open . '</span></small>';
             },
             'tipus' => function () {
                 return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">

@@ -18,6 +18,7 @@ use app\models\Kosar;
 use app\models\Munkamenet;
 use app\models\StatikusSzoveg;
 use app\models\Szamla;
+use app\models\Tartalom;
 use app\models\Termek;
 use app\models\TermekTulajdonsag;
 use app\models\TermekTulajdonsagErtek;
@@ -884,6 +885,52 @@ class AdminApiController extends \yii\web\Controller {
                 'columns' => $columns,
                 'actions' => $actions,
             ]),
+        ];
+    }
+
+    public function actionDeleteContent() {
+        $id = Yii::$app->request->post('id');
+        $model = Tartalom::findOne($id);
+        if ($model) {
+            $model->delete();
+        }
+        return [
+            'redirect_url' => '(current)',
+        ];
+    }
+
+    public function actionEditContent($schema, $id = '') {
+        if ($id) {
+            $isNewRecord = false;
+            $model = Tartalom::findOne($id);
+        } else {
+            $isNewRecord = true;
+            $model = new Tartalom();
+        }
+        $sort = Yii::$app->request->post('sorrend');
+        $schemaName = $schema;
+        if ($schemaName) {
+            $schema = Tartalom::getContentSchemaByType($schemaName);
+        } else {
+            $schemaName = $model->tipus;
+            $schema = Tartalom::getContentSchemaByType($model->tipus);
+        }
+        $postData = Yii::$app->request->post();
+        $data = json_decode($model->adatok ?: '{}', true);
+        foreach ($schema as $key => $_) {
+            $val = $postData[$key] ?? '';
+            $data[$key] = $val;
+        }
+        $model->tipus = $schemaName;
+        $model->adatok = json_encode($data);
+        if ($sort) {
+            $model->sorrend = $sort;
+        }
+        $model->save(false);
+        $model->postProcess($data, $isNewRecord);
+        return [
+            'id' => $model->getPrimaryKey(),
+            'redirect_url' => '(current)',
         ];
     }
 

@@ -8,5 +8,6 @@
     'no_delete' => $no_delete ?? false,
     'view' => $view,
     'value' => is_null($value) ? [] : [$value],
+    'params' => $params ?? [],
 ])?>
 
