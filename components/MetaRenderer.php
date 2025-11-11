@@ -3,6 +3,7 @@ namespace app\components;
 
 use app\models\Beallitasok;
 use app\models\Fajl;
+use app\models\Hir;
 use app\models\Kategoria;
 use app\models\StatikusOldal;
 use app\models\Termek;
@@ -10,7 +11,10 @@ use Yii;
 use ZendSearch\Lucene\Index\Term;
 
 class MetaRenderer {
-    const DEFAULT_TITLE = 'Borágó Webáruház';
+    const DEFAULT_TITLE = 'DragCards';
+
+    const DEFAULT_DESCRIPTION = 'Okoskártyák különféle felhasználáshoz';
+
     const DEFAULT_ROBOTS = 'noarchive,max-snippet:-1,max-image-preview:standard,max-video-preview:-1';
     CONST DEFAULT_ROBOTS_OTHER = 'noindex,nofollow,max-snippet:-1,max-image-preview:standard,max-video-preview:-1';
 
@@ -67,7 +71,7 @@ class MetaRenderer {
             case 'site/index':
                 return $this->renderMetaByData([
                     'title' => self::DEFAULT_TITLE,
-                    'description' => 'Az általunk forgalmazott növények nagy részt a hazai legjobb termelőktől származnak, valamint Hollandiából és Olaszországból.',
+                    'description' => self::DEFAULT_DESCRIPTION,
                     'image' => '/img/meta.png',
                 ]);
 
@@ -80,7 +84,7 @@ class MetaRenderer {
                 }
 
                 return $this->renderMetaByData([
-                    'title' => $product->nev . ' | Borágó Webáruház',
+                    'title' => $product->nev . ' | ' . self::DEFAULT_TITLE,
                     'description' => $product->rovid_leiras,
                     'image' => $product->photo ? '/' . $product->photo->getFilePath() : '/img/meta.png',
                 ]);
@@ -90,9 +94,19 @@ class MetaRenderer {
                 $staticPage = StatikusOldal::findOne($id);
 
                 return $this->renderMetaByData([
-                    'title' => $staticPage->cim . ' | Borágó Webáruház',
+                    'title' => $staticPage->cim . ' ' . self::DEFAULT_TITLE,
                     'description' => '',
                     'image' => '/img/meta.png',
+                ]);
+
+            case 'site/blog-post':
+                $id = Yii::$app->request->get('id');
+                $blogPost = Hir::findOne($id);
+
+                return $this->renderMetaByData([
+                    'title' => $blogPost->cim . ' ' . self::DEFAULT_TITLE,
+                    'description' => $blogPost->lead,
+                    'image' => $blogPost->photo ? '/' . $category->photo->getFilePath() : '/img/meta.png',
                 ]);
 
             case 'site/category':
@@ -102,13 +116,13 @@ class MetaRenderer {
                 if (!$category) {
                     return $this->renderMetaByData([
                         'title' => self::DEFAULT_TITLE,
-                        'description' => 'Az általunk forgalmazott növények nagy részt a hazai legjobb termelőktől származnak, valamint Hollandiából és Olaszországból.',
+                        'description' => self::DEFAULT_DESCRIPTION,
                         'image' => '/img/meta.png',
                     ]);
                 }
 
                 return $this->renderMetaByData([
-                    'title' => $category->nev . ' | Borágó Webáruház',
+                    'title' => $category->nev . ' | ' . self::DEFAULT_TITLE,
                     'description' => '',
                     'image' => $category->photo ? '/' . $category->photo->getFilePath() : '/img/meta.png',
                 ]);

@@ -36,9 +36,16 @@ class Tulajdonsag extends \yii\db\ActiveRecord
     {
         return [
             [['ertek_tipus'], 'string'],
-            [['nev', 'ertek_tipus'], 'required'],
+            [['nev'], 'required'],
             [['szurheto', 'lathato', 'kotelezo', 'variaciokepzo'], 'integer'],
             [['nev'], 'string', 'max' => 255],
+            [
+                ['ertek_tipus'],
+                'required',
+                'when' => function($model) {
+                    return $model->variaciokepzo == 0;
+                },
+            ],
         ];
     }
 

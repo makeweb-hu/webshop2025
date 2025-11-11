@@ -262,6 +262,11 @@ class Hir extends \yii\db\ActiveRecord
         return '/img/no-photo.svg';
     }
 
+    public function getPhoto()
+    {
+        return Fajl::findOne($this->kep_id);
+    }
+
     public function getLargePhoto() {
         $f = Fajl::findOne($this->kep_id);
         if ($f) {

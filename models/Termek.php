@@ -287,7 +287,7 @@ class Termek extends \yii\db\ActiveRecord
         $smallest = 500000000000;
         $smallestVariation = null;
         foreach ($variations as $variation) {
-            if (!$variation->ar) {
+            if (!$variation->currentPrice()) {
                 continue;
             }
             if ($variation->currentPrice() < $smallest) {
@@ -298,7 +298,7 @@ class Termek extends \yii\db\ActiveRecord
         if (!$smallestVariation) {
             return '(nincs ár)';
         }
-        $price = Helpers::formatMoney($smallestVariation->ar);
+        $price = Helpers::formatMoney($smallestVariation->currentPrice());
         if ($smallestVariation->akcios_ar) {
             $price = '<span style="text-decoration:line-through;opacity:0.5">'.$price.'</span> ' . Helpers::formatMoney($smallestVariation->akcios_ar);
         }
