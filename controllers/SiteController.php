@@ -57,6 +57,12 @@ class SiteController extends \yii\web\Controller {
         return $this->render('index');
     }
 
+    public function actionBlogPost($id)
+    {
+        return $this->render('index');
+    }
+
+
     public function actionCheckout()
     {
         $this->layout = 'checkout';

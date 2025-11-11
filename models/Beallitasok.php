@@ -90,6 +90,10 @@ class Beallitasok extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function currentDomain() {
+        return Beallitasok::get('domain');
+    }
+
     public static function get($prop) {
         return Beallitasok::findOne(1)->$prop;
     }

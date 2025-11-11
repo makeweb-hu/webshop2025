@@ -34,16 +34,19 @@ if (substr($icon, 0, 1) !== '<') {
 
 
     <<?=$tag?> href="<?=is_callable($url) ? $url($id) : \app\components\Helpers::urlWithId($url, $id ?? '')?>"
+
+    <?php if ($tooltip ?? null): ?>
+        data-tooltip="<?=htmlspecialchars($tooltip)?>"
+    <?php endif; ?>
+
             class="<?=$class?>"
             <?=$tag==='button'?'onclick="window.location.href = \''.($url ?? '').'\';"':''?>
 
             <?=($fancybox??null)?'data-fancybox ':''?>
 
             target="<?=$target ?? ''?>">
-        <?=$icon?> <?=$title ?? 'Szerkeszt'?>
-        <?php if ($tooltip ?? null): ?>
-            data-tooltip="<?=htmlspecialchars($tooltip)?>"
-        <?php endif; ?>
+        <?=$icon?> <?=$title ?>
+
     </<?=$tag?>>
 
 

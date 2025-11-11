@@ -9,6 +9,8 @@ use app\models\Dashboard;
 use app\models\DashboardKartya;
 use app\models\EmailSablon;
 use app\models\Felhasznalo;
+use app\models\Hir;
+use app\models\HirKategoria;
 use app\models\Job;
 use app\models\Kategoria;
 use app\models\Kerdoiv;
@@ -68,6 +70,65 @@ class AdminController extends \yii\web\Controller {
     public function actionContentTable($type) {
         return $this->render('tables/content-table', [
             'type' => $type,
+        ]);
+    }
+
+
+    public function actionNews() {
+        if (!Felhasznalo::current()->isAdmin()) {
+            return $this->redirect('/admin');
+        }
+        return $this->render('tables/news_table');
+    }
+
+    public function actionRedirectToNews($id) {
+        $article = Hir::findOne($id);
+        if (!$article) {
+            return $this->redirect('/');
+        }
+        return $this->redirect($article->getUrl());
+    }
+
+    public function actionRedirectToNewsCategory($id) {
+        $category = HirKategoria::findOne($id);
+        if (!$category) {
+            return $this->redirect('/');
+        }
+        return $this->redirect($category->getUrl());
+    }
+
+    public function actionNewsCategories() {
+        /*
+        if (!Felhasznalo::current()->isAdmin()) {
+            return $this->redirect('/admin');
+        }
+        return $this->render('tables/news_categories_table');
+        */
+    }
+
+    public function actionEditNews($id = '') {
+        if (!Felhasznalo::current()->isAdmin()) {
+            return $this->redirect('/admin');
+        }
+        $model = Hir::findOne($id);
+        if (!$model) {
+            $id = '';
+        }
+        return $this->render('forms/edit_news', [
+            'id' => $id,
+        ]);
+    }
+
+    public function actionEditNewsSeo($id = '') {
+        if (!Felhasznalo::current()->isAdmin()) {
+            return $this->redirect('/admin');
+        }
+        $model = Hir::findOne($id);
+        if (!$model) {
+            $id = '';
+        }
+        return $this->render('forms/edit_news_seo', [
+            'id' => $id,
         ]);
     }
 

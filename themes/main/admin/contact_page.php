@@ -22,7 +22,7 @@ $model->save(false);
 
 <?=\app\components\Helpers::render('ui/fields', [
 
-    'columns' => ['idopont', 'nev', 'email', 'telefonszam', 'termek'],
+    'columns' => ['idopont', 'nev', 'email', 'telefonszam'],
 
     'model' => $model
 ]);?>

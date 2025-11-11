@@ -221,7 +221,7 @@
     color: #bbbbbb;
 }
 
-.date-input .calendar {position: absolute;background-color: #fff;border: 1px solid #dfdede;padding: 12px;z-index: 5;border-radius: 11px;top: calc(100% + 4px);cursor: default;transition: 0.3s;opacity: 0;visibility: hidden;transform: translateY(-11px);}
+.date-input .calendar {position: absolute;background-color: #fff;border: 1px solid #dfdede;padding: 12px;z-index: 15;border-radius: 11px;top: calc(100% + 4px);cursor: default;transition: 0.3s;opacity: 0;visibility: hidden;transform: translateY(-11px);}
 
 .date-input.shown .calendar {
     opacity: 1;

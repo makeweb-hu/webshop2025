@@ -98,6 +98,7 @@ class Oldal extends \yii\db\ActiveRecord
             'statikus_oldal' => 'Statikus oldal',
             'atiranyitas' => 'Átirányítás',
             'fooldal' => 'Főoldal',
+            'hir' => 'Blogbejegyzés',
         ];
     }
 

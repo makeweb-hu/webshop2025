@@ -92,6 +92,29 @@ class Fajl extends \yii\db\ActiveRecord
         return $fileModel;
     }
 
+    public function resizePhotoContain($width, $height) {
+        $path = 'storage/cache/photo/' . $this->getPrimaryKey() . '-'. $width . 'x' . $height . '-contain-white.jpg';
+        if (file_exists($path)) {
+            return '/' . $path;
+        }
+        /*
+        if (!$this->isPhoto()) {
+            return '/img/no-photo.svg?v=1';
+        }
+        */
+        $img = Imagelib::open($this->getFilePath());
+        if (!$img) {
+            return '/img/no-photo.svg?v=2';
+        }
+        $resized = Imagelib::contain($img, $width, $height);
+        if (!$resized) {
+
+            return '/img/no-photo.svg?v=3';
+        }
+        Imagelib::save($resized, $path);
+        return '/' . $path;
+    }
+
     public function isPhoto() {
         $ext = strtolower($this->getExtension());
         return $ext === 'jpg' || $ext === 'png' || $ext == 'jpeg' || $ext == 'gif' || $ext == 'bmp' || $ext == 'webp';

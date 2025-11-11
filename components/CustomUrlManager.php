@@ -77,6 +77,13 @@ class CustomUrlManager extends UrlManager {
                             "id" => $page->model_id,
                         ]
                     ];
+                case 'hir':
+                    return [
+                        "site/blog-post",
+                        [
+                            "id" => $page->model_id,
+                        ]
+                    ];
                 case 'atiranyitas':
                     return [
                         "site/redirect-to",

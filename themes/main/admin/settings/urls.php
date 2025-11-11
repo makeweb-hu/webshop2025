@@ -23,6 +23,7 @@ $tab = Yii::$app->request->get('tab', '');
         'termek' => ['title'=>'Termék', 'url'=>'/admin/settings-urls?tab=termek'],
         'kategoria' => ['title'=>'Kategoria', 'url' => '/admin/settings-urls?tab=kategoria'],
         'statikus_oldal' => ['title'=>'Statikus oldal', 'url' => '/admin/settings-urls?tab=statikus_oldal'],
+        'hir' => ['title'=>'Blogbejegyzés', 'url' => '/admin/settings-urls?tab=hir'],
         'atiranyitas' => ['title'=>'Átirányítás', 'url' => '/admin/settings-urls?tab=atiranyitas'],
     ],
     'active' => $tab
