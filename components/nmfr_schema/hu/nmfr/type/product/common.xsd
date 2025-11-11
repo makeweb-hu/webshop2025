@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by Agnes Septey (i-Cell Mobilsoft Zrt.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:common="http://common.types.nmfr.hu/common" xmlns:commonservice="http://common.types.nmfr.hu/commonservice" xmlns="http://product.types.nmfr.hu/common" targetNamespace="http://product.types.nmfr.hu/common" elementFormDefault="qualified" attributeFormDefault="unqualified" jaxb:extensionBindingPrefixes="xjc" jaxb:version="1.0">
+	<xs:import namespace="http://common.types.nmfr.hu/common" schemaLocation="../common/common.xsd"/>
+	<xs:import namespace="http://common.types.nmfr.hu/commonservice" schemaLocation="../common/commonservice.xsd"/>
+	<xs:simpleType name="AllocationType">
+		<xs:annotation>
+			<xs:documentation>Költség számolás típusa! Fix: Fix idejű termék vásárlás (pl.: Pályamatrica). Időben növekvő költségű: Idő alapú termékeknél</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FIX"/>
+			<xs:enumeration value="INC">
+				<xs:annotation>
+					<xs:documentation>Incremental</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CategoryType">
+		<xs:annotation>
+			<xs:documentation>Járműkategóriák</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CAR">
+				<xs:annotation>
+					<xs:appinfo>
+						<jaxb:typesafeEnumMember name="CAR"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BUS">
+				<xs:annotation>
+					<xs:appinfo>
+						<jaxb:typesafeEnumMember name="BUS"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MOTOR">
+				<xs:annotation>
+					<xs:appinfo>
+						<jaxb:typesafeEnumMember name="MOTOR"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VAN">
+				<xs:annotation>
+					<xs:appinfo>
+						<jaxb:typesafeEnumMember name="VAN"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRUCK">
+				<xs:annotation>
+					<xs:appinfo>
+						<jaxb:typesafeEnumMember name="TRUCK"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRAIL">
+				<xs:annotation>
+					<xs:appinfo>
+						<jaxb:typesafeEnumMember name="TRAIL"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="CategoryListType">
+		<xs:sequence>
+			<xs:element name="category" type="CategoryType" maxOccurs="unbounded"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BasicVehicleType">
+		<xs:sequence>
+			<xs:element name="licensePlateNumber" type="common:LicensePlateNumberType"/>
+			<xs:element name="countryCode" type="common:CountryCodeType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="VehicleType">
+		<xs:annotation>
+			<xs:documentation>Regisztrált járműről fixen tárolható adatok</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="BasicVehicleType">
+				<xs:sequence>
+					<xs:element name="category" type="CategoryType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CostInfoType">
+		<xs:sequence>
+			<xs:element name="cost" type="xs:decimal">
+				<xs:annotation>
+					<xs:documentation>A tranzakció költsége!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AllocatedCostInfoType">
+		<xs:complexContent>
+			<xs:extension base="CostInfoType">
+				<xs:sequence>
+					<xs:element name="preallocatedCost" type="xs:decimal">
+						<xs:annotation>
+							<xs:documentation>Jelenlegi allokáció, foglalás!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PurchaseBasicRequestType">
+		<xs:complexContent>
+			<xs:extension base="commonservice:BasicRequestType">
+				<xs:sequence>
+					<xs:element name="timeStamp" type="xs:dateTime">
+						<xs:annotation>
+							<xs:documentation>A request küldésének időpontja a küldő órája szerint!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PurchaseBasicResponseType">
+		<xs:complexContent>
+			<xs:extension base="commonservice:BasicResponseType">
+				<xs:sequence>
+					<xs:element name="transactionId" type="common:GenIdType">
+						<xs:annotation>
+							<xs:documentation>Az elvégzett művelet/tranzakció NMFR-en belüli azonosítója!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="timeStamp" type="xs:dateTime">
+						<xs:annotation>
+							<xs:documentation>Aktuális server óra! Technikai adat.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PurchaseBasicFinalizeRequestType">
+		<xs:complexContent>
+			<xs:extension base="commonservice:BasicRequestType">
+				<xs:sequence>
+					<xs:element name="transactionId" type="common:GenIdType">
+						<xs:annotation>
+							<xs:documentation>A befejezni kívánt tranzakció azonosítója!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

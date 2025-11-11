@@ -1,0 +1,1288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by Agnes Septey (i-Cell Mobilsoft Zrt.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://common.types.nmfr.hu/common" xmlns="http://common.types.nmfr.hu/commonservice" targetNamespace="http://common.types.nmfr.hu/commonservice" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://common.types.nmfr.hu/common" schemaLocation="common.xsd"/>
+	<xs:annotation>
+		<xs:documentation>
+2014.04.08:
+- remove from ReasonCodeType: ALREADY_ORDERED, UNREGISTERED
+2014.05.15:
+- added to ReasonCodeType: SHOP_ID_ALREADY_EXISTS, INVALID_SHOP_ID_OR_PIN, PIN_REQURED_FOR_ADHOC_TRANSACTIONS, CUSTOMER_NAME_REQURED_FOR_ADHOC_CARD_REGISTRATIONS, POSTPAID_PURCHASE_NOT_POSSIBLE
+2015.04.15:
+- added to ReasonCodeType: LOCATION_OUT_OF_SERVICE
+
+
+</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="FunctionCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OK">
+				<xs:annotation>
+					<xs:documentation>OK</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WARNING">
+				<xs:annotation>
+					<xs:documentation>Warning</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERROR">
+				<xs:annotation>
+					<xs:documentation>Error</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ReasonCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SUCCESS">
+				<xs:annotation>
+					<xs:documentation>Sikeres!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OPERATION_FAILED">
+				<xs:annotation>
+					<xs:documentation>Általános / nem lekezelt -pl. technikai jellegű- hiba a feldolgozás során!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_INPUT">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen adatok a kérésben!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNAUTHORIZED_HANDLING">
+				<xs:annotation>
+					<xs:documentation>Jogosulatlan kezelés az adaton!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONTENT_LENGTH_EXCEEDED">
+				<xs:annotation>
+					<xs:documentation>Túl nagy méretű tartalom!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <xs:enumeration value="ONLY_CORPORATION_ENABLED">
+                <xs:annotation>
+                    <xs:documentation>Csak jogi személy engedélyezett!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="ADDRESS_IS_DEFAULT_CUSTOMER_ADDRESS">
+				<xs:annotation>
+					<xs:documentation>A címadat alapértelmezett ügyféladatként van beállítva, ezért nem törölhető!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ADDRESS_IS_DEFAULT_ACCOUNT_ADDRESS">
+				<xs:annotation>
+					<xs:documentation>A címadat alapértelmezett folyószámla adatként van beállítva, ezért nem törölhető!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_REQUEST">
+				<xs:annotation>
+					<xs:documentation>Kérés nem értelmezhető, érvénytelen request!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_REQUEST_HEADERS">
+				<xs:annotation>
+					<xs:documentation>Kérés fejléc nem értelmezhető, érvénytelen request header!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXTSYS_COMMUNICATION_FAILED">
+				<xs:annotation>
+					<xs:documentation>Külső partnerrel történő kommunikáció sikertelen! (Nem a viszonteladóval! pl.: NÚSZ matricavásárlás közben sikertelen lett a kommunikáció)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXTSYS_BUSINESS_ERROR">
+				<xs:annotation>
+					<xs:documentation>Külső partner nem adott sikeres üzleti választ! (Kommunikáció sikerült, de nem volt sikeres a hívás, interface error)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXTSYS_SYSTEM_ERROR">
+				<xs:annotation>
+					<xs:documentation>Külső partner rendeszerében hiba történt a végrehajtás közben!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNKNOWN_ZONE">
+				<xs:annotation>
+					<xs:documentation>Megadott zónakód ismeretlen!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_PLATE_NUMBER">
+				<xs:annotation>
+					<xs:documentation>Hibás rendszám!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_COUNTRY_CODE">
+				<xs:annotation>
+					<xs:documentation>Hibás felségjel!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_VEHICLE_TYPE">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen jármű kategória!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_TRANSACTION_STATE">
+				<xs:annotation>
+					<xs:documentation>Tranzakció sátusza alapján nem végrehajtható a kérés. Pl.: Parkolás indítás egy már futó parkolásra!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_USER_OR_PASSWORD">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen belépési adatok!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_PASSWORD">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen jelsző!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <xs:enumeration value="INVALID_TAXPAYER_ID">
+                <xs:annotation>
+                    <xs:documentation>Érvénytelen adószám!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="USER_KICKED">
+				<xs:annotation>
+					<xs:documentation>A felhasználó 3 sikertelen bejelentkezési próbálkozás után egy időre ki lett tiltva!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTP_INCORRECT">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen one-time password bejelentkezési próbálkozás!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INSUFFICENT_COVERAGE_FOR_OTP_SMS">
+				<xs:annotation>
+					<xs:documentation>Nem áll rendelkezésre elegendő fedezet a one-time password SMS kiküldéséhez!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TIMEOUT">
+				<xs:annotation>
+					<xs:documentation>A rendelkezésre álló idő lejárt</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCESS_DENIED">
+				<xs:annotation>
+					<xs:documentation>A hívónak nincs joga a művelet végrehajtásához!</xs:documentation>
+				</xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="INVALID_APPLICATION_VERSION">
+                <xs:annotation>
+                    <xs:documentation>A hívó alkalamzás verziója érvénytelen!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="LOW_BALANCE">
+				<xs:annotation>
+					<xs:documentation>Fedezethiány!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCOUNT_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>Folyószámla nem meghatározható!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCOUNT_BLOCKED">
+				<xs:annotation>
+					<xs:documentation>A folyószámla le van tiltva</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCOUNT_CLOSED">
+				<xs:annotation>
+					<xs:documentation>A folyószámla le van zárva</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>Az ügyfél nincs benne a rendszerben</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_NOT_ACTIVATED">
+				<xs:annotation>
+					<xs:documentation>Az ügyfél még nincs aktiválva</xs:documentation>
+				</xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="USER_NOT_FOUND">
+                <xs:annotation>
+                    <xs:documentation>A felhasználó nem található.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="USER_RIGHT_LIST_NOT_DISTINCT">
+                <xs:annotation>
+                    <xs:documentation>A felhasználóhoz egy jogot csak egyszer lehet hozzárendelni.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="USER_RIGHT_NOT_FOUND">
+                <xs:annotation>
+                    <xs:documentation>A jogosultásg nem létezik vagy nem lehet az adott felhasználóhoz rendelni.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_GROUP_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>Nem található a belépési csoport</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OBJECT_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>Üzleti objektum nem található! Általános hiba! Pl.: tranzakció lekérdezésnél!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>Nem található a díjtermék</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REQUESTID_NOT_UNIQUE">
+				<xs:annotation>
+					<xs:documentation>Request Id nem egyedi!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_DATE_VALUE">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen dátum!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAST_DATE_GIVEN">
+				<xs:annotation>
+					<xs:documentation>Múltbéli dátum lett megadva</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONTEXT_USER_MISSING">
+				<xs:annotation>
+					<xs:documentation>A User elem nincs megadva a Contextben</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <xs:enumeration value="CUSTOMER_VALIDATION_MISSING">
+                <xs:annotation>
+                    <xs:documentation>Nem történt ügyfél oldali ellenőrzés!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="SERVICE_UNAVAILABLE">
+				<xs:annotation>
+					<xs:documentation>A szolgáltatás nem elérhetó</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SUCCESS_WITH_WARNING">
+				<xs:annotation>
+					<xs:documentation>Sikeres, de nem teljes mértékben</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RESPONSE_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>originalRequest==false esetben, ha nincs válasz az adatbázisban, akkor ez a hiba megy vissza</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="USER_NAME_NOT_UNIQUE">
+				<xs:annotation>
+					<xs:documentation>Felhasználónév már létezik a rendszerben</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_REG_ALREADY_FINISHED">
+				<xs:annotation>
+					<xs:documentation>A felhasználó regisztáció korábban már véglegesítve lett!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HUGO_REFUSED_REQUEST">
+				<xs:annotation>
+					<xs:documentation>A HUGO rendszer visszautasította a krést!!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PLATE_AND_PHONE_NUMBER_ALREADY_CONNECTED_TO_ACCOUNT">
+				<xs:annotation>
+					<xs:documentation>A telefonszám és rendszám páros már hozzá van rendelve a megadott folyószámlához!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PHONE_NUMBER_ALREADY_ASSOCIATED_WITH_PLATE">
+				<xs:annotation>
+					<xs:documentation>A telefonszám már szerepel egy rendszámmal összerendelve!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SHOP_ID_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>A megadott OTP ügyfél azonositó már felhasználásra került, ezért nem regisztrálható</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_SHOP_ID_OR_PIN">
+				<xs:annotation>
+					<xs:documentation>Hibás ügyfél azonosító / pin</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PIN_REQURED_FOR_ADHOC_TRANSACTIONS">
+				<xs:annotation>
+					<xs:documentation>Nincs megadv PIN</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_NAME_REQURED_FOR_ADHOC_CARD_REGISTRATIONS">
+				<xs:annotation>
+					<xs:documentation>Nincs megadva ügyfélnév</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="POSTPAID_PURCHASE_NOT_POSSIBLE">
+				<xs:annotation>
+					<xs:documentation>Postpaid fizetés nem lehetséges</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_VATNUMBER">
+				<xs:annotation>
+					<xs:documentation>Hibás adószám</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PURCHASE_NOT_PERMITTED">
+				<xs:annotation>
+					<xs:documentation>A termék vásárlása a megadott folyószámlával nem lehetséges, mert le lett tiltva.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONSTRAINT_VIOLATED">
+				<xs:annotation>
+					<xs:documentation>Adatbázis műveleteknél, ha constraint violation van, ez megy vissza</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REJECTED_BY_INSPECTOR_ACTIVITY">
+				<xs:annotation>
+					<xs:documentation>Művelet visszautasítva ellőri tevékenység miatt. Pl.: Múltbeli parkolás leállítást visszautasítja a rendszer mert későbbi időpontban volt rá ellenőri lekérdezés, tehát még ott állt a jármű később is!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LOCATION_OUT_OF_SERVICE">
+				<xs:annotation>
+					<xs:documentation>Adott időpont után következő 7 napon belül a parkolási zónához nem tartozik üzemidő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TICKET_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>Nincs ilyen jegyszám</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PLATE_NUMBER_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>A megadott rendszámmal nem található parkolás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSACTION_VALIDITY_EXPIRED">
+				<xs:annotation>
+					<xs:documentation>A tranzakció érvényesség lejárt!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSACTION_ALREADY_CLOSED">
+				<xs:annotation>
+					<xs:documentation>A tranzakció lezárásra került!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSACTION_PREPARED">
+				<xs:annotation>
+					<xs:documentation>A tranzakció előkészített státuszban van!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REGISTERED_ACCOUNT_IS_ABROGATED">
+				<xs:annotation>
+					<xs:documentation>A kiválasztott folyoszámla korábban már felmondásra került!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_ACCOUNT_TYPE">
+				<xs:annotation>
+					<xs:documentation>A kiválasztott folyoszámla típusa nem megfelelő!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<!-- ExternalPayment... -->
+			<xs:enumeration value="EXT_CUSTOMER_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>StoreCustomerId or autoTransaction requires externalCustomerId.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXT_CUSTOMER_REGISTRATION_DELETED">
+				<xs:annotation>
+					<xs:documentation>The external customer registration was deleted.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXT_CUSTOMER_NOT_REGISTERED">
+				<xs:annotation>
+					<xs:documentation>The given externalCustomerId is not registrated in the system.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCOUNT_ABROGATED">
+				<xs:annotation>
+					<xs:documentation>The account that is connected to the external customerId is canceled. No transaction allowed.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCOUNT_NOT_ASSIGNED">
+				<xs:annotation>
+					<xs:documentation>The given externalCustomerId is registered, but not assigned to any account of the customer.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_ALREADY_ASSIGNED_TO_ENTRY_POINT_GROUP">
+				<xs:annotation>
+					<xs:documentation>A termék már hozzá van rendelve a megadott belépési pont csoporthoz.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXT_TRANSACTION_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>The given external transactionId already exists!</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SERVICE_NOT_ALLOWED">
+				<xs:annotation>
+					<xs:documentation>The partner has no rights for requested service. Contact business service owner!</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AMOUNT_NOT_POSITIVE">
+				<xs:annotation>
+					<xs:documentation>The amount must be a positive number.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CART_ITEM_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>The given car is empty.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSACTION_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>The given transaction was not found in the system.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSACTION_EXPIRED">
+				<xs:annotation>
+					<xs:documentation>The given transaction's validity is expired.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSACTION_ALREADY_CLOSED">
+				<xs:annotation>
+					<xs:documentation>The given transaction is already closed.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CALLBACK_URL_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>The callback URL is required.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSACTION_ALREADY_STARTED">
+				<xs:annotation>
+					<xs:documentation>The given transaction is already started.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPORT_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>The asked report is not found.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ORIG_TRANSACTION_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>The original transaction was not found in the system.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ORIG_TRANSACTION_STATE_INVALID">
+				<xs:annotation>
+					<xs:documentation>The original transaction is not successfully finished, correction is not allowed.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ORIG_TRANSACTION_ALREADY_CORRECTED">
+				<xs:annotation>
+					<xs:documentation>Original transaction was already corrected, either by a STORNO or a PARTIALLY type request.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CORRECTION_AMOUNT_ERROR">
+				<xs:annotation>
+					<xs:documentation>The given amount is higher, then the original transaction's leftover amount, or the storno request's amount differs from the original amount.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARTNER_ID_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>The given partnerId is not found in the system.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INCONSISTENT_PARTNER_ID">
+				<xs:annotation>
+					<xs:documentation>The given and the stored partnerIds are inconsistent.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARTNER_ID_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>PartnerId required for registration.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARTNER_CUSTOMER_ID_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>PartnerCustomerId required for registration.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INCONSISTENT_PARTNER_CUSTOMER_ID">
+				<xs:annotation>
+					<xs:documentation>The given and the stored partnerCustomerIds are inconsistent.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RESELLER_ID_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>The given resellerId is not found in the system.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INCONSISTENT_RESELLER_ID">
+				<xs:annotation>
+					<xs:documentation>The given and the stored resellerIds are inconsistent.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RESELLER_ID_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>ResellerId required for registration.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RESELLER_CUSTOMER_ID_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>ResellerCustomerId required for registration.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INCONSISTENT_RESELLER_CUSTOMER_ID">
+				<xs:annotation>
+					<xs:documentation>The given and the stored resellerCustomerIds are inconsistent.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXT_CUSTOMER_REGISTRATION_ID_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>The finalize function requires customerRegistrationId.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXT_CUSTOMER_ALREADY_REGISTERED">
+				<xs:annotation>
+					<xs:documentation>The external customer is already registered.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXT_CUSTOMER_PREPARED_REGISTRATION_REQUIRED">
+				<xs:annotation>
+					<xs:documentation>The finalize function requires customer registration in prepared state.</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVOICE_NOT_PERMITTED">
+				<xs:annotation>
+					<xs:documentation>A megadott adatok alapján számla generálása nem lehetséges!</xs:documentation>
+					</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="STORNO_NOT_ALLOWED">
+				<xs:annotation>
+					<xs:documentation>Storno nem engedélyezett!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <xs:enumeration value="INVALID_ENTRYPOINT_CODE">
+                <xs:annotation>
+                    <xs:documentation>Helytelen belépési pont azonosító!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="DIFFERENT_ENTRYPOINT_USAGE">
+                <xs:annotation>
+                    <xs:documentation>Eltérő belépési pont használat!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="INVALID_PURCHASE_TOKEN_ID">
+                <xs:annotation>
+                    <xs:documentation>A vásárláshoz nem tartozik a megadott azonosítóval token</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="INVALID_PURCHASE_TOKEN_STATUS">
+                <xs:annotation>
+                    <xs:documentation>A token már nem aktív!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="TOO_FREQUENT_TOKEN_CHANGE">
+                <xs:annotation>
+                    <xs:documentation>Túl gyakori token frissítés!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="TOKEN_OFFLINE_VALIDATION_LIMIT_REACHED">
+                <xs:annotation>
+                    <xs:documentation>Offline token validációs kísérletek száma elérte a maximumot!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="TOKEN_ONLINE_VALIDATION_LIMIT_REACHED">
+                <xs:annotation>
+                    <xs:documentation>Online token validációs kísérletek száma elérte a maximumot!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="PURCHASE_TOKEN_DEVICE_CHANGE_LIMIT_REACHED">
+                <xs:annotation>
+                    <xs:documentation>A vásárlás nem rendelhető újabb eszközhöz, mert elérte a max átruházás számát!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="PURCHASE_TOKEN_ALREADY_ASSIGNED">
+                <xs:annotation>
+                    <xs:documentation>A vásárlás nem rendelhető újabb eszközhöz, mert már hozzá van rendelve egy eszközhöz!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="CANNOT_FIND_ACTIVE_PURCHASE_TOKEN">
+                <xs:annotation>
+                    <xs:documentation>Nem található aktív token a vásárláshoz!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="PURCHASE_TOKEN_DEVICE_CHANGE_IN_USAGE">
+                <xs:annotation>
+                    <xs:documentation>Jegy már használatban van, nem helyezhető át!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="PURCHASE_OUT_OF_USABILITY">
+                <xs:annotation>
+                    <xs:documentation>A megvásárolt termék megengedett felhasználási ideje lejárt!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="INVALID_TICKET">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen jegy</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<!-- FW átállás... -->
+			<xs:enumeration value="OBU_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>OBU_ALREADY_EXISTS</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_VEHICLE_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>CUSTOMER_VEHICLE_ALREADY_EXISTS</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ANOTHER_ACCOUNT_CUSTOMER_VEHICLE">
+				<xs:annotation>
+					<xs:documentation>ANOTHER_ACCOUNT_CUSTOMER_VEHICLE</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VEHICLE_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>VEHICLE_ALREADY_EXISTS</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCVEH_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>ACCVEH_ALREADY_EXISTS</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REQUEST_ID_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>REQUEST_ID_NOT_FOUND</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REQUEST_ALREADY_PAID">
+				<xs:annotation>
+					<xs:documentation>REQUEST_ALREADY_PAID</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BACKEND_SYSTEM_PARSING_ERROR">
+				<xs:annotation>
+					<xs:documentation>BACKEND_SYSTEM_PARSING_ERROR</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <xs:enumeration value="ALREADY_VALIDATED_BY_CONTROLLER">
+                <xs:annotation>
+                    <xs:documentation>ALREADY_VALIDATED_BY_CONTROLLER</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="ONLY_GREEN_WALLET_PRODUCTS_ALLOWED_WITH_GREEN_WALLET_ACCOUNT">
+				<xs:annotation>
+					<xs:documentation>ONLY_GREEN_WALLET_PRODUCTS_ALLOWED_WITH_GREEN_WALLET_ACCOUNT</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ONLY_ONE_GREEN_WALLET_ACCOUNT_ALLOWED_FOR_A_CUSTOMER">
+				<xs:annotation>
+					<xs:documentation>ONLY_ONE_GREEN_WALLET_ACCOUNT_ALLOWED_FOR_A_CUSTOMER</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<!-- ...FW átállás -->
+			<!-- FW 2.0 átállás... -->
+			<xs:enumeration value="INVALID_SESSION">
+				<xs:annotation>
+					<xs:documentation>Invalid session!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DB_CONNECTION_ERROR">
+				<xs:annotation>
+					<xs:documentation>Adatbázis kapcsolódási hiba!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAIL_SERVICE_ERROR">
+				<xs:annotation>
+					<xs:documentation>Levelezőszerver kapcsolódási hiba!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MULTIPLE_ROWS_RETURNED">
+				<xs:annotation>
+					<xs:documentation>Query returned more than one row!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_PIN_USER_COMBINATION">
+				<xs:annotation>
+					<xs:documentation>Pin kód és felhasználó nincs összerendelve</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<!-- ...FW 2.0 átállás -->
+			<xs:enumeration value="REPOSITORY_FAILED">
+				<xs:annotation>
+					<xs:documentation>Adatbázis lekéderdezési hiba</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+
+			<!-- GDPR -->
+            <xs:enumeration value="CUSTOMER_STATEMENTS_MISSING">
+                <xs:annotation>
+                    <xs:documentation>GDPR statement is missing from request!</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="CUSTOMER_STATEMENTS_MISSING">
+				<xs:annotation>
+					<xs:documentation>GDPR statement is missing from request!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_PURCHASE_ALREADY_SUSPENDED">
+				<xs:annotation>
+					<xs:documentation>Product Purchase státusza már eleve FELFÜGGESZTETT</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_PURCHASE_VALIDITY_INVALID">
+				<xs:annotation>
+					<xs:documentation>Product Purchase státusza érvénytelen</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_PURCHASE_VALIDITY_START_BY_VALIDATION">
+				<xs:annotation>
+					<xs:documentation>Product Purchase státusza validálástól érvényes</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CSV_NOT_EXITS_FOR_REPORT">
+				<xs:annotation>
+					<xs:documentation>Nem tartozik a riporthoz CSV</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PDF_NOT_EXITS_FOR_REPORT">
+				<xs:annotation>
+					<xs:documentation>Nem tartozik a riporthoz PDF</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOCUMENT_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Nem tartozik dokumentum a rekordhoz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_NOT_CONNECTED_TO_ENTRY_POINT_GROUP">
+				<xs:annotation>
+					<xs:documentation>A termék nem kapcsolódik belépési pont csoporthoz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CORPORATE_CUSTOMER_CANNOT_PURCHASE_THIS_PRODUCT">
+				<xs:annotation>
+					<xs:documentation>Jogi személy nem vásárolhatja meg ezt a terméket</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_GROUP_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>EntryPointGroup nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONNECTED_TO_ENTRY_POINT">
+				<xs:annotation>
+					<xs:documentation>Az entryPointGroup nem törölhető, mert van még hozzá kapcsolódó EntryPoint</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Nem létező EntryPointra való hivatkozás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>EntryPoint nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_IS_DELETED">
+				<xs:annotation>
+					<xs:documentation>Törölt EntryPoint</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_NOT_CONNECTED_TO_GROUP">
+				<xs:annotation>
+					<xs:documentation>A megadott EntryPoint nincs hozzákapcsolva a megadott EntryPointGrouphoz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_GROUP_ENTRY_POINT_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>A megadott EntryPoint nincs hozzákapcsolva a megadott EntryPointGrouphoz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_ENTRY_POINT_GROUP_ID">
+				<xs:annotation>
+					<xs:documentation>A megadott EntryPointGroup Id nincs hozzákapcsolva a megadott Customerhez</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAST_CUSTOMER_USER_DELETE_NOT_ALLOWED">
+				<xs:annotation>
+					<xs:documentation>Customer-hez tartozó utolsó CustomerUser törlése nem lehetséges</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_IS_NOT_ACTIVE">
+				<xs:annotation>
+					<xs:documentation>A belépési pont törölt vagy inaktív</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAX_FILE_COUNT_PER_UPLOAD_EXCEEDED">
+				<xs:annotation>
+					<xs:documentation>A feltöltött fájlok száma meghaladja a max egyszerre feltölthető fájlok számát</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONSTRAINT_VIOLATION">
+				<xs:annotation>
+					<xs:documentation>Adatbázis kényszer megsértése</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>EntryPoint létezik már</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OUT_OF_SIZE">
+				<xs:annotation>
+					<xs:documentation>Túl nagy adatfeltöltés</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VECTOR_IMAGE_CATEGORY_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>VectorImageCategory nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VECTOR_IMAGE_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>VectorImage nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VECTOR_IMAGE_HAS_ASSIGNMENT">
+				<xs:annotation>
+					<xs:documentation>VectorImage rendelkezik érvényes hozzárendeléssel</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SECRET_ASSIGNMENT_IS_LOCKED">
+				<xs:annotation>
+					<xs:documentation>Épp most jött létre egy másik SecretAssignment, próbáld újra!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_ALREADY_CONNECTED_TO_GROUP">
+				<xs:annotation>
+					<xs:documentation>A megadott entry point már kapcsolódik egy entry point csoporthoz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTRY_POINT_COUNT_MISMATCH">
+				<xs:annotation>
+					<xs:documentation>Az EntryPoint-ok száma a bekérdezésből nem egyezik a ténylegesen létezőek számával</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NOT_AUTHORIZED">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen session</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FORBIDDEN">
+				<xs:annotation>
+					<xs:documentation>A kérés végrehajtása nem engedélyezett</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTITY_NOT_FOUND">
+				<xs:annotation>
+					<xs:documentation>Entitás nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_LINE_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Közlekedési útvonal nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_LINE_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Közlekedési útvonal már létezik</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_STATION_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Állomás nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_STATION_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Állomás már létezik</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_LINE_STATION_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Közlekedési útvonal - állomás összerendelés nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_STATION_SEQUENCE">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen állomás sorszám</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CANNOT_ACTIVATE_LINE">
+				<xs:annotation>
+					<xs:documentation>A vonalhoz nincs még kiindulási és végállomás rendelve</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PURCHASE_TRANSPORT_DATA_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Vásárláshoz tartozó szakaszinformáció nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_PARAMETER_CONFIG">
+				<xs:annotation>
+					<xs:documentation>Az üzleti objektum paraméterezése érvénytelen</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <!-- GDPR -->
+            <!-- CUSTOMER -->
+            <xs:enumeration value="IMEI_NUMBER_ALREADY_EXISTS">
+                <xs:annotation>
+                    <xs:documentation>A IMEI szám már regisztrálva van egy másik operációs rendszerrel</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="INVALID_REQUEST_TIME">
+				<xs:annotation>
+					<xs:documentation>A kérés ideje érvénytelen</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENTITY_ID_LIST_NOT_DISTINCT">
+				<xs:annotation>
+					<xs:documentation>A bejövő ID listában vannak dupla elemek.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_STATION_DISTANCE_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Közlekedési útvonal - állomás összerendelés nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_DISTANCE_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>A bejövő távolságérték már szerepel az adatbázisban.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSPORT_DISTANCE_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>A bejövő távolságérték nem található</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="STATION_ALREADY_EXISTS_ON_LINE">
+				<xs:annotation>
+					<xs:documentation>A bejövő állomás érték már szerepel az adott vonalon. Hurok a vonalakon nem engedélyezett.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_DISTANCE_NOT_EXISTS">
+				<xs:annotation>
+					<xs:documentation>A megadott id-hoz nem található távolság rekord</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_DISTANCE_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>A megadott id-hoz már létezik távolság rekord hozzárendelés</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRODUCT_NOT_DISTANCE_BASED">
+				<xs:annotation>
+					<xs:documentation>A megadott termék nem távolság alapú.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_USERNAME_ALREADY_EXISTS">
+				<xs:annotation>
+					<xs:documentation>Az adott username már szerepel az adatbázisban</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_USER_ID_IS_IMMUTABLE">
+				<xs:annotation>
+					<xs:documentation>A felhasználóhoz tartozó azonosító nem módosítható.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_USER_NAME_IS_IMMUTABLE">
+				<xs:annotation>
+					<xs:documentation>A felhasználó belépési neve nem módosítható.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_USER_INSDATE_IS_IMMUTABLE">
+				<xs:annotation>
+					<xs:documentation>A felhasználó létrehozásának ideje nem módosítható.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUSTOMER_USER_IS_INACTIVE">
+				<xs:annotation>
+					<xs:documentation>Inaktív Customer User</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <xs:enumeration value="NOT_VALID_IDENTIFIER">
+                <xs:annotation>
+                    <xs:documentation>Nincs ilyen igazolványszám</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="NOT_HAVE_VALID_PURCHASE">
+				<xs:annotation>
+					<xs:documentation>Nincs érvényes vásárlása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NOT_EVALUABLE_PRODUCT">
+				<xs:annotation>
+					<xs:documentation>Termékhez nincs kiértékelő függvény, vagy nem idő-alapú</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NOT_AVAILABLE_FIX_VALIDITES">
+				<xs:annotation>
+					<xs:documentation>Nincs érvényes fixvalidity adott termékhez</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_USER_NAME">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen felhasználói név</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NON_UNIQUE_NAME">
+				<xs:annotation>
+					<xs:documentation>Nem egyedi név</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALREADY_EXISTING_NAME">
+				<xs:annotation>
+					<xs:documentation>Már létező név</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_NAME">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen név</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CANNOT_FIND_VALID_NMFR_NEJP_ASSIGNMENT">
+				<xs:annotation>
+					<xs:documentation>Nincs ilyen érvényes NMFR-NEJP összerendelés</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PHONE_NUMBER_AND_PLATE_NUMBER_ALREADY_ASSIGNED_TO_ANOTHER_ACCOUNT">
+				<xs:annotation>
+					<xs:documentation>A telefonszám-rendszám páros már hozzá van rendelve egy másik accounthoz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+            <!-- CUSTOMER -->
+            <xs:enumeration value="PRODUCT_NOT_MARKETABLE">
+                <xs:annotation>
+                    <xs:documentation>Termék jelen idő szerint nem vásárolható</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <!-- Green Wallet -->
+            <xs:enumeration value="BOTTLE_DEPOSIT_ID_ALREADY_CONSUMED">
+                <xs:annotation>
+                    <xs:documentation>Üveg visszaváltás azonosító már föl lett használva</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+			<xs:enumeration value="INVALID_CURRENCY">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen pénznem. Csak HUF elfogadott</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVALID_BOTTLE_DEPOSIT_ID">
+				<xs:annotation>
+					<xs:documentation>Érvénytelen azonosító</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PHONE_NUMBER_BLACKLISTED">
+				<xs:annotation>
+					<xs:documentation>Telefonszám a tiltólistán van</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="SiteType">
+		<xs:sequence>
+			<xs:element name="siteId" type="common:CommonIdType"/>
+			<xs:element name="siteName" type="common:SimpleText35Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UserType">
+		<xs:sequence>
+			<xs:element name="userId" type="common:CommonIdType"/>
+			<xs:element name="password" type="common:LongIdType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContextType">
+		<xs:sequence>
+			<xs:element name="user" type="UserType" minOccurs="0"/>
+			<xs:element name="site" type="SiteType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="version" type="common:VersionType" default="1.0">
+			<xs:annotation>
+				<xs:documentation>A service hívás/válasz verziója, alapértelmezetten 1.0!</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="requestId" type="common:CommonIdType" use="required">
+			<xs:annotation>
+				<xs:documentation>A service hívás azonosítója, globálisan egyedi, szolgáltatáshívásonként változik!</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="requestRootId" type="common:CommonIdType" use="required">
+			<xs:annotation>
+				<xs:documentation>Egy üzleti folyamatot azonosít, egy folyamaton belül állandó. Pl.: Ha egy login üzleti folyamat több szolgáltatáshívást von magával, akkor ezeknél a szolgáltatáshívásoknál ugyan az lesz a requestRootId, de a requestId különbözni fog! </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="actionId" type="common:CommonIdType" use="required">
+			<xs:annotation>
+				<xs:documentation>Az üzleti folyamat rövid tömör neve amiben a szolgáltatás hívás kezdeményeződött. Pl.: WEB_LOGIN, WEB_DISPLAY_PROFILE</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sessionId" type="common:LongIdType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Ha szolgáltatáshívás web session-höz, vagy alkalmazás sessionhöz köthető akkor annak az azonosítóját itt meg lehet adni!</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="acceptDuration" type="xs:integer" use="optional">
+			<xs:annotation>
+				<xs:documentation>PseudoSynchron szolgáltatásoknál van csak értelmezve szerver oldalon. Itt lehet megadni hogy a kliens mennyi idő után várja el a timeoutot! Ha letellik az itt megadott idő, akkor SOAP fault fog menni a klienshez, és később lekérdezheti az eredményt.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="originalRequest" type="xs:boolean" default="true">
+			<xs:annotation>
+				<xs:documentation>Azt jelöli hogy a szolgáltatás az eredeti request, vagy már csak a pesudoSynchron timeout utáni eredmény lekérdezés! Ha True akkor a server új request-ként kezeli a kérést, ha False akkor a requestId alapján csak megnézni, hogy van-e már eredmény!</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="contextVersion" type="common:VersionType" default="1.0">
+			<xs:annotation>
+				<xs:documentation>A service hívás/válasz -ban lévő context verziója, alapértelmezetten 1.0!</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+        <xs:attribute name="language" type="common:LanguageType" default="HU" use="optional">
+            <xs:annotation>
+                <xs:documentation>Hívó fél nyelve</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="AbstractBasicRequestType" />
+	<xs:complexType name="BasicRequestType">
+		<xs:complexContent>
+			<xs:extension base="AbstractBasicRequestType">
+				<xs:sequence>
+				<xs:element name="context" type="ContextType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AbstractBasicResponseType" />
+	<xs:complexType name="BasicResponseType">
+		<xs:complexContent>
+			<xs:extension base="AbstractBasicResponseType">
+			<xs:sequence>
+				<xs:element name="context" type="ContextType"/>
+				<xs:element name="result" type="BaseResultType"/>
+			</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BaseResultType">
+		<xs:sequence>
+			<xs:element name="funcCode" type="FunctionCodeType"/>
+			<xs:element name="reasonCode" type="ReasonCodeType"/>
+			<xs:element name="externalReasonCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Külső rendszer által kapott hibakód</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="msg" type="xs:string" minOccurs="0"/>
+			<xs:element name="stackTrace" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>DEV környezetben használatos element! CallStack-et lehet átadni, ami az esetleges nyomozást támogatja!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BackendNotAvailableType">
+		<xs:complexContent>
+			<xs:extension base="BaseResultType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BONotFoundType">
+		<xs:complexContent>
+			<xs:extension base="BaseResultType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TechnicalFaultType">
+		<xs:complexContent>
+			<xs:extension base="BaseResultType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BusinessFaultType">
+		<xs:complexContent>
+			<xs:extension base="BaseResultType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SecurityFaultType">
+		<xs:complexContent>
+			<xs:extension base="BaseResultType"/>
+		</xs:complexContent>
+	</xs:complexType>
+    <xs:complexType name="ValidationType">
+		<xs:sequence>
+			<xs:element name="field" type="xs:string" />
+			<xs:element name="error" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvalidRequestFaultType">
+		<xs:complexContent>
+			<xs:extension base="BaseResultType">
+				<xs:sequence>
+					<!-- validacios hibak felsorolasa -->
+					<xs:element name="error" type="ValidationType"
+						minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="backendNotAvailable">
+		<xs:annotation>
+			<xs:documentation>Backend or core service not available!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="BaseResultType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BONotFound">
+		<xs:annotation>
+			<xs:documentation>Business Object Not found</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="BONotFoundType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="technicalFault">
+		<xs:annotation>
+			<xs:documentation>Technical fault!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="TechnicalFaultType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="businessFault">
+		<xs:annotation>
+			<xs:documentation>Business fault!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="BusinessFaultType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="securityFault">
+		<xs:annotation>
+			<xs:documentation>Security fault!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="SecurityFaultType" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="basicResponse">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="BasicResponseType" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="invalidRequestFault">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="InvalidRequestFaultType" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

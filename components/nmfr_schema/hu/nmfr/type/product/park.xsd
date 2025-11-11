@@ -1,0 +1,939 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by Agnes Septey (i-Cell Mobilsoft Zrt.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://common.types.nmfr.hu/common" xmlns:commonservice="http://common.types.nmfr.hu/commonservice" xmlns:commonproduct="http://product.types.nmfr.hu/common" xmlns="http://product.types.nmfr.hu/park" xmlns:not="http://notification.types.nmfr.hu/notification" targetNamespace="http://product.types.nmfr.hu/park" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://common.types.nmfr.hu/common" schemaLocation="../common/common.xsd"/>
+	<xs:import namespace="http://common.types.nmfr.hu/commonservice" schemaLocation="../common/commonservice.xsd"/>
+	<xs:import namespace="http://product.types.nmfr.hu/common" schemaLocation="./common.xsd"/>
+	<xs:import namespace="http://notification.types.nmfr.hu/notification" schemaLocation="../notification/notification.xsd"/>
+	<xs:annotation>
+		<xs:documentation>
+V1.0 
+	- Initial version
+V1.1
+	- ParkingStopReasonType bővült a NORMAL értékkel.
+	- zoneName element a zóna infóba
+	- zonId type új tipussal! ZoneIdType hogy alkalamzható legyen zóna ID-nak és Zóna kódnak is!
+	- Parking Status új enum: CANCELLED: törölt (megadott időn bellül leállított), vagy preparációnál már sikertelenségre futó parkolások lehetnek ilyenek. Az ilyen parkolás költsége 0! FAILED, FINISHED. Enum-nál dokumentálva, a jelentés!
+	- ReasonCode enumerált lett a válaszokban. commonservice.xsd-ben van definiálva a type!
+	- parkingStartPrepareResponse -ból ki lett véve a defaultSMSText, mert ebben a fázisban még nincs mit kommunikálni a ügyféllel.
+V 1.2
+	- AllocationCorrectionType új típus
+	- parkingStartPrepareResponse-ba új element allocationCorrection, ami megmutatja hogy milyen módon lett korrigálva az allokációs paraméter és parkolási idő adat a válaszban.
+V 1.3
+    - zoneId element name fix
+    - zoneId attribute
+    - context -ben a requestId és a requestRootId típusa változott!
+    - NotificationCodeType enum prefix törölve!
+V1.4
+	- Új element: parkolási adatoknál a comfortCost. Kényelmi, tranzakciós jutalék. Elszámolás támogatása.
+	- stopReason enum bővült: LOW_BALANCE, BUSINESS_LOGIC enumokkal. Leállítás okának ezeket is meg lehet adni!
+	- ParkingStatus enum bővült: EXPIRED. Indítási idő lejárt! Nem lehet indítani!
+	- common:CommonIdType elfogad minden base64 karaktert! requestRoot és requestId-ban így jöhet base64 kódolt azonosító
+V1.5
+	- externalCustomerId opcionális!
+	- Zóna tarifa átadása jármű kategóriánként
+	- Parking Detail-ben új elem: chargeEndTime
+	- Új AllocationCorrectionType: ZONE_CHARGE_END
+	- GPS koordináta alapján való lekérdezés
+	- Zóna adatok bővítése
+	- ZoneDetailListType és RadiusType külön típusként kiemelve
+	- parkingAllocationRequest és response. Viszonteladó oldalról is indítható az allokáció
+	- ParkingStopReason új enum: ALLOCATION_ERROR
+        
+V1.6
+	- ParkingStopReason új enum: END_OF_DAY
+
+V1.7
+	- Mélygarázs parkolás támogatása miatt externalTicketId bevezetése choice-vel
+	- Zóna adatok bővítése (zoneType)
+    - Zóna adatok bővítése (operationStartTimeActual, operationEndTimeActual)
+
+V1.8
+    - Parking Detail-ben új elem: businessType
+    - ParkingStartPrepareRequest-ben az externalTicketId és vehicle közül csak az egyiket lehet kitölteni
+</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="ZoneIdType">
+		<xs:annotation>
+			<xs:documentation>Zona kódok és Zóna azonosítók típusa!</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z0-9_]{3,30}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ZoneDetailListType">
+		<xs:sequence>
+			<xs:element name="zoneDetail" type="ZoneDetailType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GPSCoordType">
+		<xs:sequence>
+			<xs:element name="lat">
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="18"/>
+						<xs:fractionDigits value="14"/>
+						<xs:maxExclusive value="9999.99999999999999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="long">
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="18"/>
+						<xs:fractionDigits value="14"/>
+						<xs:maxExclusive value="9999.99999999999999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="time" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>UTC</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GPSCoordListType">
+		<xs:sequence>
+			<xs:element name="gpsCoord" type="GPSCoordType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GPSDimensionListType">
+		<xs:sequence>
+			<xs:element name="dimension" type="GPSCoordListType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="RadiusType">
+		<xs:annotation>
+			<xs:documentation>A koordináta környékén mekkora távolságig (méter) keressen zónát!</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="3000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LanguageType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="4"/>
+			<xs:pattern value="[A-Z]{1,4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="DiscountType">
+		<xs:sequence>
+			<xs:element name="discountId" type="common:GenIdType">
+				<xs:annotation>
+					<xs:documentation>Engedély száma, azonosítója az NMFR rendszerben!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="discountType" type="common:SimpleText100Type">
+				<xs:annotation>
+					<xs:documentation>Előre definiált konstansok lehetnek!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="discountMultiplier" type="xs:double" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Kedvezmény szorzója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="ParkingStatus">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PREPARED">
+				<xs:annotation>
+					<xs:documentation>Előkészítve státuszban!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RUNING">
+				<xs:annotation>
+					<xs:documentation>A parkolás fut!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="STOPPED">
+				<xs:annotation>
+					<xs:documentation>Le lett állítva, szándékosan!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CANCELLED">
+				<xs:annotation>
+					<xs:documentation>Törölve, visszavonva! pl.: Egy percen belül leállítják!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXPIRED">
+				<xs:annotation>
+					<xs:documentation>Lejárt a parkolás indítására előírt idő. Elő lett készítve, de nem lett időben start-olva.!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FAILED">
+				<xs:annotation>
+					<xs:documentation>Hibás parkolás, el sem indult valamilyen hiba miatt! pl.: egyenleg hiány, nem megfelelő üzleti feltételek...stb</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FINISHED">
+				<xs:annotation>
+					<xs:documentation>Leállt, beavatkozás nélkül. Pl.: üzemidő vége miatt!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AllocationCorrectionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE">
+				<xs:annotation>
+					<xs:documentation>Nem lett korrigálva a kapott allokációs adat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZONE_LIMIT_MAX">
+				<xs:annotation>
+					<xs:documentation>Maximum parkolási idő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZONE_LIMIT_MIN">
+				<xs:annotation>
+					<xs:documentation>Minimum parkolási idő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZONE_OPERATION_END">
+				<xs:annotation>
+					<xs:documentation>Zóna üzemidő vége</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZONE_CHARGE_END">
+				<xs:annotation>
+					<xs:documentation>Zóna díjszabás miatt módosítva lett a parkolás vége, és az allokált összeg a fizetés köteles időhöz, illetve összeghez lett igazítva!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="BasicParkingDetailsType">
+		<xs:sequence minOccurs="0">
+			<xs:element name="vehicle" type="commonproduct:VehicleType"/>
+			<xs:element name="externalTicketId" type="common:SimpleText50Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Külső parkolás azonosítő mélygarázsos rendszerben</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="zoneInfo" type="ZoneInfoType" />
+			<xs:element name="externalCustomerId" type="common:GenIdType" minOccurs="0"/>
+			<xs:element name="status" type="ParkingStatus"/>
+			<xs:element name="startTime" type="xs:dateTime"/>
+			<xs:element name="endTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Futó parkolás esetén ez egy olyan dátum amikor biztos, hogy le fog állni</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="chargeEndTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A díjfizetés végének időpontja. Az az időpont ami után nem számítunk fel további díjat. Tipikusan innentől váltunk át napijeggyé. Csak v1.5 verziójú hívás esetén van töltve!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isFinished" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Parkolás fut/nem fut</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:sequence minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Csak v1.8 version hívás felett van kitöltve!!!</xs:documentation>
+				</xs:annotation>
+				<xs:element name="businessType" type="common:BusinessType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Értékesítési mód, hogy milyen értékesítési folyamatban vesz részt az adott parkolás</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:sequence>
+		<xs:attribute name="id" type="common:GenIdType" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ParkingDetailsType">
+		<xs:complexContent>
+			<xs:extension base="BasicParkingDetailsType">
+				<xs:sequence>
+					<xs:element name="costInfo" type="AllocatedZoneCostInfoType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BasicParkingDetailsListType">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="parking" type="BasicParkingDetailsType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FullParkingDetailsType">
+		<xs:complexContent>
+			<xs:extension base="ParkingDetailsType">
+				<xs:sequence>
+					<xs:element name="stopReason" type="ParkingStopReasonType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Leállítás, leállás oka! Csak már leállt parkolás esetén van töltve!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="hasError" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>Volt -e hiba!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="errorMsg" type="common:SimpleText150Type" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="ZoneType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="onsite">
+				<xs:annotation>
+					<xs:documentation>Normál parkoló</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="offsite">
+				<xs:annotation>
+					<xs:documentation>Külső partner által üzemeltett parkoló</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="BasicZoneInfoType">
+		<xs:sequence>
+			<xs:element name="zoneName" type="common:SimpleText50Type">
+				<xs:annotation>
+					<xs:documentation>A zóna elnevezése, neve!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="zoneTarif" type="xs:double">
+				<xs:annotation>
+					<xs:documentation>Tarifa az adott zónában</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isEstimatedTarif" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Igen, ha a zoneTarif mezőben nem pontos tarifa (egy órányi parkolás költsége) van, hanem egy kalkulált bescült érték. Olyan zónák esetén fordulhat ez elő ahol nem óra alapú lineáris a parkolási díj számítása!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isFixTicketZone" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Adott zóna fix összegű jegyvásárlásra szolgál! Igaz érték esetén az ide indított parkolásokat nem lehet leállítani! Notification és Allocation hívások nem történnek az itt indított parkolásokkal kapcsolatban!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:sequence minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Csak v1.6 version hívás felett van kitöltve!!!</xs:documentation>
+				</xs:annotation>
+				<xs:element name="zoneType" type="ZoneType">
+					<xs:annotation>
+						<xs:documentation>A zóna típusa</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:sequence>
+		<xs:attribute name="id" type="ZoneIdType" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ZoneInfoType">
+		<xs:complexContent>
+			<xs:extension base="BasicZoneInfoType">
+				<xs:sequence>
+					<xs:element name="zoneCode" type="ZoneIdType"/>
+					<xs:element name="zoneTarifMultiplier" type="xs:double">
+						<xs:annotation>
+							<xs:documentation>Tarifa szorzó!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ZoneDetailType">
+		<xs:complexContent>
+			<xs:extension base="BasicZoneInfoType">
+				<xs:sequence>
+					<xs:sequence minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Csak v1.5 version hívás felett van kitöltve!!!</xs:documentation>
+						</xs:annotation>
+						<xs:element name="zoneTarifBus" type="xs:double">
+							<xs:annotation>
+								<xs:documentation>BUS Tarifa az adott zónában</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="zoneTarifVan" type="xs:double">
+							<xs:annotation>
+								<xs:documentation>VAN Tarifa az adott zónában</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="zoneTarifTruck" type="xs:double">
+							<xs:annotation>
+								<xs:documentation>TRUCK Tarifa az adott zónában</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="zoneTarifMotor" type="xs:double">
+							<xs:annotation>
+								<xs:documentation>MOTOR Tarifa az adott zónában</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+					<xs:element name="zoneParams">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="parkingOperatorName" type="common:SimpleText150Type">
+									<xs:annotation>
+										<xs:documentation>Parkolási zónát üzemeltető szervezet neve! (Akik a büntetés adják ki!)</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="city" type="common:SimpleText50Type"/>
+								<xs:element name="zoneCodes">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="zoneCode" type="common:NumberIdType" maxOccurs="unbounded"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:sequence minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Csak v1.5 version hívás felett van kitöltve!!!</xs:documentation>
+									</xs:annotation>
+									<!--  uzemido kezdete, vege -->
+									<xs:element name="operationStartTimeWorkDay" type="xs:time"/>
+									<xs:element name="operationEndTimeWorkDay" type="xs:time"/>
+									<xs:element name="operationStartTimeFreeDay" type="xs:time"/>
+									<xs:element name="operationEndTimeFreeDay" type="xs:time"/>
+									<xs:element name="operationStartTimeHolidayDay" type="xs:time"/>
+									<xs:element name="operationEndTimeHolidayDay" type="xs:time"/>
+									<!--  -->
+									<xs:element name="availableVehicleCategory" type="commonproduct:CategoryListType">
+										<xs:annotation>
+											<xs:documentation>Zónában használható jármű kategóriák!</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="minimumCost" type="xs:decimal">
+										<xs:annotation>
+											<xs:documentation>Minimum fizetendő összeg</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="minimumLength" type="xs:decimal">
+										<xs:annotation>
+											<xs:documentation>Minimum fizetendő parkolási idő. Egy parkolás nem lehet ennél rövidebb! Kivéve ha törlik!</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="maxParkingLength" type="xs:decimal">
+										<xs:annotation>
+											<xs:documentation>Maximum parkolható idő, ennél nem lehet hosszabb egy parkolás az adott zónában.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="maxBillingCost" type="xs:decimal">
+										<xs:annotation>
+											<xs:documentation>Maximum fizetendő összeg! Egy parkolás költsége nem lehet ennél az összegnél nagyobb. Ha eléri ezt az összeget a parkolás nem nő tovább a költsége. Pl.: 1500 Ft elérése után egész nap ott állhat a jármű</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="maxBillingLength" type="xs:decimal">
+										<xs:annotation>
+											<xs:documentation>Maximum fizetendő parkolási hossz! Ha egy parkolás hossza eléri ezt az értéket, akkor a költsége nem nő tovább. Pl.: 3 óra fizetése után elérése után egész nap ott állhat a jármű</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="zoneDimensions" type="GPSDimensionListType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Parkolási zóna poligon. Csak akkor van töltve a válaszokban ha kérve van a request-ben!</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:sequence minOccurs="0">
+	                                    <xs:annotation>
+	                                        <xs:documentation>Csak v1.7 version hívás felett van kitöltve!!!</xs:documentation>
+	                                    </xs:annotation>
+	                                    <xs:element name="operationStartTimeActualMotor" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő kezdete (MOTOR)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationEndTimeActualMotor" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő vége (MOTOR)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+										<xs:element name="operationStartTimeActualCar" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő kezdete (CAR)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationEndTimeActualCar" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő vége (CAR)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationStartTimeActualVan" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő kezdete (VAN)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationEndTimeActualVan" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő vége (VAN)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationStartTimeActualBus" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő kezdete (BUS)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationEndTimeActualBus" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő vége (BUS)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationStartTimeActualTruck" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő kezdete (TRUCK)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+		                                <xs:element name="operationEndTimeActualTruck" type="xs:dateTime" >
+		                                    <xs:annotation>
+		                                        <xs:documentation>Aktuális üzemeltetési idő vége (TRUCK)</xs:documentation>
+		                                    </xs:annotation>
+		                                </xs:element>
+									</xs:sequence>
+								</xs:sequence>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="ParkingStopReasonType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MANUAL">
+				<xs:annotation>
+					<xs:documentation>Viszonteladó, saját hatáskörben leállítja.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="USER">
+				<xs:annotation>
+					<xs:documentation>Ügyfél kezdeményezése alapján!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LOW_BALANCE">
+				<xs:annotation>
+					<xs:documentation>Leállítás alacsony egyenleg miatt! Akár előkészítés után!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BUSINESS_LOGIC">
+				<xs:annotation>
+					<xs:documentation>Viszonteladói üzleti logika alapján! A viszonteladó saját megoldásából adódó döntés nyomán leállítja!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NORMAL">
+				<xs:annotation>
+					<xs:documentation>Normális üzemszerű működés hatására! Pl.: Üzemidő vége, elérte a max parkolási időt, viszonteladó által megadott max parkolási idő lejárt...</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALLOCATION_ERROR">
+				<xs:annotation>
+					<xs:documentation>Allokációs hiba miatt állt le a (viszonteladói) parkolás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="END_OF_DAY">
+				<xs:annotation>
+					<xs:documentation>A parkolás a nap vége miatt lett leállítva!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PreallocationDetailsType">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="allocationTime" type="xs:int">
+					<xs:annotation>
+						<xs:documentation>Mennyi időnek (percben) megfelelő összeget (zóna tarifa * quantity) foglaljon be a szerver indulásnál! A parkolás során ez nőhet (maxPlanedTime-ig), amikor eléri a parkolási idő az itt megadottat. Onnantól egy órányit foglal be előre!</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="allocationAmount" type="xs:decimal">
+					<xs:annotation>
+						<xs:documentation>Allokáció alapja az itt megadott összeg lessz! Az itt megadott összeg alapján idő alapra visszabontja a server oldal és az alapján egy pontos összeget számol! A parkolás során ez nőhet (maxPlanedTime-ig), amikor eléri a parkolási idő az itt megadottat. Onnantól egy órányit foglal be előre!</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="maxPlanedTime" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>A parkolás maximum futási ideje! Ennyi ideig futhat maximum a parkolás. Ezt a válaszban az NMFR módosíthatja. Zóna és egyéb adatok alapján az aktuális helyeztehez mérten.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ParkingBasicResponseType">
+		<xs:complexContent>
+			<xs:extension base="commonproduct:PurchaseBasicResponseType">
+				<xs:sequence>
+					<xs:element name="parkDetail" type="ParkingDetailsType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="InspectorActionDetailType">
+		<xs:sequence>
+			<xs:element name="queryTime" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>Ellenőri lekérdezés időpontja!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="operatorName" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Lekérdező üzemeltető neve!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ZoneCostInfoType">
+		<xs:complexContent>
+			<xs:extension base="commonproduct:CostInfoType">
+				<xs:sequence>
+					<xs:element name="length" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Parkolás hossza!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AllocatedZoneCostInfoType">
+		<xs:complexContent>
+			<xs:extension base="commonproduct:AllocatedCostInfoType">
+				<xs:sequence>
+					<xs:element name="comfortCost" type="xs:decimal">
+						<xs:annotation>
+							<xs:documentation>Tranzakciós jutalék, kényelmi díj.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="length" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Parkolás hossza az allokált költség alapján! Percben. Tehát az allokált összeg ennyi időre elég!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="parkingStartPrepareRequest">
+		<xs:annotation>
+			<xs:documentation>Parkolási költségek kalkulációját végző szolgáltatáshívás! Ezt hívva lehet előkalkulálni egy parkolás várható költségét. Az itt kapott értékek alapján lehet kalkulálni a parkolás indításánál a kalkulációs paramétereknél megadható értékeket. Azaz előre le lehet kérdezni mennyibe kerülne a hívó üzleti logikájának megfelelő egyenlegfoglalási módszer alapján az adott zónában az adott kategóriájú jármű parkolása!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+				<xs:extension base="commonservice:BasicRequestType">
+					<xs:sequence>
+						<xs:element name="zoneCode" type="ZoneIdType"/>
+						<xs:choice>
+							<xs:element name="vehicle" type="commonproduct:VehicleType" />
+							<xs:element name="externalTicketId" type="common:SimpleText50Type">
+								<xs:annotation>
+									<xs:documentation>Külső parkolás azonosítő mélygarázsos rendszerben</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+						<xs:element name="externalCustomerId" type="common:GenIdType" minOccurs="0"/>
+						<xs:element name="startDateTime" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>A parkolás indításának időpontja. Költség kalkulációk ez alapján lesznek számolva! A server a válaszban ezt felülírhatja, ha nem parkolási üzemidőre esik! Ha nincs megadva akkor aktuális idővel számol a server! Az aktuális időpontnál lehet korábbi időpont is, a tűrés NMFR oldali rendszerparaméter!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="preallocationDetails" type="PreallocationDetailsType">
+							<xs:annotation>
+								<xs:documentation>Költség kalulációs paraméterek</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="notificationList" type="not:NotificationTypeList" minOccurs="0"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingStartPrepareResponse">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicResponseType">
+					<xs:sequence>
+						<xs:element name="parkDetails" type="ParkingDetailsType"/>
+						<xs:element name="minimalCost" type="ZoneCostInfoType">
+							<xs:annotation>
+								<xs:documentation>A megadott zónában és járműadatok alapján a minimális parkolási költségadatok!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="allocationCorrection" type="AllocationCorrectionType">
+							<xs:annotation>
+								<xs:documentation>A preallocationDetails milyen módon lett korrigálva!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="preallocationDetails" type="PreallocationDetailsType">
+							<xs:annotation>
+								<xs:documentation>Az indításhoz figyelembe vehető költségparaméterek! A request-ben küldöttől eltérhet! A Server az aktuális helyzethez mérten módosítja a valóságban használható értékekre. Az előkészítés az itt visszaadott értékek alapján zajlott le.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="discount" type="DiscountType" minOccurs="0"/>
+						<xs:element name="activeParkings" type="BasicParkingDetailsListType">
+							<xs:annotation>
+								<xs:documentation>Adott viszonteladó álltal ugyan erre a járműre korábban indított és még futó parkolások listája!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="activeParkingWithOtherServiceProvider" type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Igaz értéket vesz fel, ha másik szolgáltatónál fut ezzel a rendszámmal parkolás!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingStartRequest">
+		<xs:annotation>
+			<xs:documentation>Parkolás indítását végző szolgáltatáshívás!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicRequestType">
+					<xs:sequence>
+						<xs:element name="transactionId" type="common:GenIdType"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingStartResponse">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="ParkingBasicResponseType">
+					<xs:sequence>
+						<xs:element name="defaultSMSText" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Alapértelmezett szöveges üzenet az ügyfél felé!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingStopRequest">
+		<xs:annotation>
+			<xs:documentation>Parkolás leállítását végző szolgáltatáshívás!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicFinalizeRequestType">
+					<xs:sequence>
+						<xs:element name="reason" type="ParkingStopReasonType">
+							<xs:annotation>
+								<xs:documentation>Parkolás leállítás oka!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="parkingStopTime" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>A parkolás leállításának időpontja. Nem lehet korábbi mint a indítás időpontja és az aktuális időponttól nem térhet el túlságosan. A tűrés NMFR oldali rendszerparaméter!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingStopResponse">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="ParkingBasicResponseType">
+					<xs:sequence>
+						<xs:element name="defaultSMSText" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Alapértelmezett szöveges üzenet az ügyfél felé!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="inspectorActivity" type="InspectorActionDetailType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>1.5 verziónál lesz csak! Ha a lellítás ellenőri tevékenység miatt nem valósulhat meg, akkor ebben az element-ben van adat a parkolási lekérdezésről</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingQueryRequest">
+		<xs:annotation>
+			<xs:documentation>Parkolás adatait lekérdező szolgáltatáshívás!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicRequestType">
+					<xs:sequence>
+						<xs:element name="transactionId" type="common:GenIdType"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingQueryResponse">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicResponseType">
+					<xs:sequence>
+						<xs:element name="parkDetail" type="FullParkingDetailsType"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getParkingZonesRequest">
+		<xs:annotation>
+			<xs:documentation>Parkolás zónákat lekérdező szolgáltatáshívás!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicRequestType">
+					<xs:sequence>
+						<xs:element name="queryTime" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>Ebben az időpontban aktuális zóna adatok lekérdezése!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="zoneDimension" type="xs:boolean" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Zónához tartozó poligónt tartalmazzon a válasz? Ha nincs megadva ez ez element akkor false a default!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:choice minOccurs="0">
+							<xs:element name="city" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Adott városban levő zónákra szűrni!</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="zoneCode" type="common:NumberIdType">
+								<xs:annotation>
+									<xs:documentation>Lekérdezés zóna kód alapján!</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getParkingZonesResponse">
+		<xs:annotation>
+			<xs:documentation>Parkolás zónákat lekérdező szolgáltatáshívás válasz!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonservice:BasicResponseType">
+					<xs:sequence>
+						<xs:element name="timeStamp" type="xs:dateTime"/>
+						<xs:element name="queryTime" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>Ebben az időpontban aktuális zóna adatok lekérdezése! A kérésben kapott időpont van visszaadva!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="zoneDetails" type="ZoneDetailListType"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getParkingZonesByGPSRequest">
+		<xs:annotation>
+			<xs:documentation>Parkolás zónákat lekérdező szolgáltatáshívás!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicRequestType">
+					<xs:sequence>
+						<xs:element name="gps" type="GPSCoordType">
+							<xs:annotation>
+								<xs:documentation>GPS koordináta!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="zoneDimension" type="xs:boolean" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Zónához tartozó poligónt tartalmazzon a válasz? Ha nincs megadva ez ez element akkor false a default!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="radius" type="RadiusType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getParkingZonesByGPSResponse">
+		<xs:annotation>
+			<xs:documentation>Parkolás zónákat lekérdező szolgáltatáshívás válasz!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonservice:BasicResponseType">
+					<xs:sequence>
+						<xs:element name="timeStamp" type="xs:dateTime"/>
+						<xs:element name="queryTime" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>Ebben az időpontban aktuális zóna adatok lekérdezése! A kérésben kapott időpont van visszaadva!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="zoneDetails" type="ZoneDetailListType"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingAllocationRequest">
+		<xs:annotation>
+			<xs:documentation>Viszonteladiói irányból indítható allokáció!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonproduct:PurchaseBasicRequestType">
+					<xs:sequence>
+						<xs:element name="transactionId" type="common:GenIdType"/>
+						<xs:choice>
+							<xs:element name="allocationTime" type="xs:double">
+								<xs:annotation>
+									<xs:documentation>Allokáció mértéke percben</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="allocationAmount" type="xs:decimal">
+								<xs:annotation>
+									<xs:documentation>Allokáció mértéke összeg szerűen</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parkingAllocationResponse">
+		<xs:annotation>
+			<xs:documentation>Viszonteladiói irányból indítható allokáció válasz!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonservice:BasicResponseType">
+					<xs:sequence>
+						<xs:element name="timeStamp" type="xs:dateTime"/>
+						<xs:element name="allocationAmount" type="xs:decimal">
+							<xs:annotation>
+								<xs:documentation>Sikeres allokáció mértéke összegszerűen!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="increaseTime" type="xs:decimal">
+							<xs:annotation>
+								<xs:documentation>A parkolási idő növekmény</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="plannedTransactionEnd" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>Az allokáció hatására a parkolás vége erre az időre módosult</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

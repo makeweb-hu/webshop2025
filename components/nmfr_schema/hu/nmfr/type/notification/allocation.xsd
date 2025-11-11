@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by Agnes Septey (i-Cell Mobilsoft Zrt.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://common.types.nmfr.hu/common" xmlns:commonserv="http://common.types.nmfr.hu/commonservice" xmlns="http://notification.types.nmfr.hu/allocation" xmlns:commonproduct="http://product.types.nmfr.hu/common" targetNamespace="http://notification.types.nmfr.hu/allocation" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://common.types.nmfr.hu/common" schemaLocation="../common/common.xsd"/>
+	<xs:import namespace="http://common.types.nmfr.hu/commonservice" schemaLocation="../common/commonservice.xsd"/>
+	<xs:import namespace="http://product.types.nmfr.hu/common" schemaLocation="../product/common.xsd"/>
+	<xs:annotation>
+		<xs:documentation>
+V1.0 
+    - nincs változás
+V 1.1
+    - nincs változás
+V1.2
+    - nincs változás
+V 1.3
+    - context -ben a requestId és a requestRootId típusa változott!
+</xs:documentation>
+</xs:annotation>
+
+	<xs:complexType name="AllocationCostInfoType">
+		<xs:sequence>
+			<xs:element name="allocation" type="xs:decimal">
+				<xs:annotation>
+					<xs:documentation>A foglalás erre az értékre fog módosulni!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="increase" type="xs:double">
+				<xs:annotation>
+					<xs:documentation>A növekmény! Amennyivel növelni kell a "zárolást"! Pénzben kifejezve!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="increaseTime" type="xs:double">
+				<xs:annotation>
+					<xs:documentation>A növekmény percben kifejezve! Mennyi percel hosszabodik meg a tranzakció az opciótól!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AllocationOptionType">
+		<xs:complexContent>
+			<xs:extension base="AllocationCostInfoType">
+				<xs:sequence>
+					<xs:element name="plannedTransactionEnd" type="xs:dateTime">
+						<xs:annotation>
+							<xs:documentation>Ez alapján az opció alapján mikor fog elfogyni/lejárni az allokált fedezet!</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:int" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AllocationOptionsType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="allocationOption" type="AllocationOptionType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="allocationRequest">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonserv:BasicRequestType">
+					<xs:sequence>
+						<xs:element name="timeStamp" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation/>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="transactionId" type="common:GenIdType">
+							<xs:annotation>
+								<xs:documentation>Az értesítéssel kapcsolatos tranzakció azonosítója az NMFR rendszerében!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="currentCostInfo" type="commonproduct:AllocatedCostInfoType">
+							<xs:annotation>
+								<xs:documentation>Az esemény időpontjában aktuális költséginformációk!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="allocationOptions" type="AllocationOptionsType">
+							<xs:annotation>
+								<xs:documentation>Az allokációs opciók, amik közül választhat a hívó! Az id attribútum egy sorszám! Az első 0 értékű elem az eredeti tranzakcióban szereplő értékeket tartalmazza! Tehát ha azt választja akkor nem lesz tovább allokáció!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="allocationResponse">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonserv:BasicResponseType">
+					<xs:sequence>
+						<xs:element name="allocationOption" type="AllocationOptionType">
+							<xs:annotation>
+								<xs:documentation>A választott allokációs mérték!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="lastAllocation" type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Ha több fedezetet nem tud biztosítani a viszonteladó! Ha ebbe true értéket kap vissza az NMFR rendszere nem fog többször allokációval próbálkozni az adott tranzakcióval kapcsolatban.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

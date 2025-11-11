@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by Agnes Septey (i-Cell Mobilsoft Zrt.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://common.types.nmfr.hu/common" xmlns:commonservice="http://common.types.nmfr.hu/commonservice" xmlns:commonproduct="http://product.types.nmfr.hu/common" xmlns="http://product.types.nmfr.hu/motorway" targetNamespace="http://product.types.nmfr.hu/motorway" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://common.types.nmfr.hu/common" schemaLocation="../common/common.xsd"/>
+	<xs:import namespace="http://common.types.nmfr.hu/commonservice" schemaLocation="../common/commonservice.xsd"/>
+	<xs:import namespace="http://product.types.nmfr.hu/common" schemaLocation="./common.xsd"/>
+	<xs:annotation>
+		<xs:documentation>
+V1.0 
+	- Initial version
+V 1.1
+	- Elírás javítás: transactionId
+	- ReasonCode enumerált lett a válaszokban. commonservice.xsd-ben van definiálva az type!
+V1.2
+    - nincs változás
+V 1.3
+    - context -ben a requestId és a requestRootId típusa változott!
+V 1.4
+ 	- common:CommonIdType elfogad minden base64 karaktert! requestRoot és requestId-ban így jöhet base64 kódolt azonosító
+V1.5
+	- externalCustomerId opcionális!
+V1.6
+	- új művelet: storno
+
+</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="VignetteNumberType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{4,21}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VignetteTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MONTH">
+				<xs:annotation>
+					<xs:documentation>Havi: 1</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WEEK">
+				<xs:annotation>
+					<xs:documentation>10 napos: 2</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR">
+				<xs:annotation>
+					<xs:documentation>Éves: 3</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_11">
+				<xs:annotation>
+					<xs:documentation>Bács-Kiskun megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_12">
+				<xs:annotation>
+					<xs:documentation>Baranya megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_14">
+				<xs:annotation>
+					<xs:documentation>Borsod-Abaúj-Zemplén megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_15">
+				<xs:annotation>
+					<xs:documentation>Csongrád megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_16">
+				<xs:annotation>
+					<xs:documentation>Fejér megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_17">
+				<xs:annotation>
+					<xs:documentation>Győr-Moson-Sopron megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_18">
+				<xs:annotation>
+					<xs:documentation>Hajdú-Bihar megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_19">
+				<xs:annotation>
+					<xs:documentation>Heves megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_20">
+				<xs:annotation>
+					<xs:documentation>M10 (Jász-Nagykun-Szolnok megye)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_21">
+				<xs:annotation>
+					<xs:documentation>Komárom-Esztergom megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_23">
+				<xs:annotation>
+					<xs:documentation>Pest megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_24">
+				<xs:annotation>
+					<xs:documentation>Somogy megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_25">
+				<xs:annotation>
+					<xs:documentation>Szabolcs-Szatmár-Bereg megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_26">
+				<xs:annotation>
+					<xs:documentation>Tolna megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_27">
+				<xs:annotation>
+					<xs:documentation>Vas megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_28">
+				<xs:annotation>
+					<xs:documentation>Veszprém megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEAR_29">
+				<xs:annotation>
+					<xs:documentation>Zala megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VignetteCategoryType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MOTOR">
+				<xs:annotation>
+					<xs:documentation>Motoros</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CAR">
+				<xs:annotation>
+					<xs:documentation>Személyautó</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BUS">
+				<xs:annotation>
+					<xs:documentation>Busz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRAIL">
+				<xs:annotation>
+					<xs:documentation>Vontatmány, utánfutó</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VAN">
+				<xs:annotation>
+					<xs:documentation>3,5t alatti kisteherautó, kisbusz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="VignetteDetailType">
+		<xs:sequence>
+			<xs:element name="plateNumber" type="common:LicensePlateNumberType"/>
+			<xs:element name="country" type="common:CountryCodeType"/>
+			<xs:element name="vignetteCategory" type="VignetteCategoryType"/>
+			<xs:element name="vignetteType" type="VignetteTypeType"/>
+			<xs:element name="validityStart" type="xs:dateTime"/>
+			<xs:element name="validityEnd" type="xs:dateTime"/>
+			<xs:element name="externalCustomerId" type="common:GenIdType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="HighwayVignetteBasicRequestType">
+		<xs:complexContent>
+			<xs:extension base="commonservice:BasicRequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="HighwayVignetteBasicResponseType">
+		<xs:complexContent>
+			<xs:extension base="commonservice:BasicResponseType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="HighwayVignetteBasicTransasctionResponseType">
+		<xs:complexContent>
+			<xs:extension base="HighwayVignetteBasicResponseType">
+				<xs:sequence>
+					<xs:element name="transactionId" type="common:GenIdType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="highwayVignettePurchaseRequest">
+		<xs:annotation>
+			<xs:documentation>Matrica vásárlási kérés</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicRequestType">
+					<xs:sequence>
+						<xs:element name="vehicle" type="commonproduct:BasicVehicleType"/>
+						<xs:element name="externalCustomerId" type="common:GenIdType" minOccurs="0"/>
+						<xs:element name="vignetteCategory" type="VignetteCategoryType"/>
+						<xs:element name="vignetteType" type="VignetteTypeType"/>
+						<xs:element name="validityStart" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Ha nincs megadva az érvényesség kezdete akkor az aktuális időpontot veszi a server alapul.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="highwayVignettePurchaseResponse">
+		<xs:annotation>
+			<xs:documentation>Matrica vásárlási válasz</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicTransasctionResponseType">
+					<xs:sequence>
+						<xs:element name="vehicle" type="commonproduct:BasicVehicleType"/>
+						<xs:element name="vignetteNumber" type="VignetteNumberType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Csak sikeresen megvásárolt matrica esetén van töltve!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="vignetteCategory" type="VignetteCategoryType"/>
+						<xs:element name="vignetteType" type="VignetteTypeType"/>
+						<xs:element name="validityStart" type="xs:dateTime"/>
+						<xs:element name="validityEnd" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Csak sikeresen megvásárolt matrica esetén van töltve!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="cost" type="xs:double">
+							<xs:annotation>
+								<xs:documentation>A matricavásárlás kötsége!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="highwayVignetteCostRequest">
+		<xs:annotation>
+			<xs:documentation>Matrica ár lekérdezése</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicRequestType">
+					<xs:sequence>
+						<xs:element name="vehicle" type="commonproduct:BasicVehicleType"/>
+						<xs:element name="vignetteCategory" type="VignetteCategoryType"/>
+						<xs:element name="vignetteType" type="VignetteTypeType"/>
+						<xs:element name="validityStart" type="xs:dateTime" minOccurs="0"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="highwayVignetteCostResponse">
+		<xs:annotation>
+			<xs:documentation>Matrica ár válasz</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicResponseType">
+					<xs:sequence>
+						<xs:element name="vignettes">
+							<xs:annotation>
+								<xs:documentation>A lekérdezés pillanatában rendszer által, ugyan erre a járműre korábban már megvásárolt, matricák listája! Az NMFR nem értesül róla ha az ügyfél időközben visszaváltotta, vagy átíratta másik járműre a matricát!</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="vignette" type="VignetteDetailType"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="vignetteCategory" type="VignetteCategoryType"/>
+						<xs:element name="vignetteType" type="VignetteTypeType"/>
+						<xs:element name="validityStart" type="xs:dateTime"/>
+						<xs:element name="cost" type="xs:double">
+							<xs:annotation>
+								<xs:documentation>A megadott matricatípus ára!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="highwayVignetteInfoRequest">
+		<xs:annotation>
+			<xs:documentation>Matrica infó lekérdezése!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation>Matrica ellenőrzés/lekérdezés! Le lehet kérdezni egy adott matrica állapotát. Vagy az eredeti vásárlási kérésben megadott requestId alapján, vagy a matrica száma alapján lehet lekérdezni! A válasz felépítése ugyan az mint a vásárlási kérésre adott válasz!</xs:documentation>
+			</xs:annotation>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicRequestType">
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="transactionId" type="common:GenIdType">
+								<xs:annotation>
+									<xs:documentation>A matricavásárlás tranzakció azonosítója</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="vignetteNumber" type="VignetteNumberType"/>
+						</xs:choice>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="highwayVignetteInfoResponse">
+		<xs:annotation>
+			<xs:documentation>Matrica infó válasz!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicTransasctionResponseType">
+					<xs:sequence>
+						<xs:element name="vehicle" type="commonproduct:BasicVehicleType"/>
+						<xs:element name="vignetteNumber" type="VignetteNumberType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Csak sikeresen megvásárolt matrica esetén van töltve!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="vignetteCategory" type="VignetteCategoryType"/>
+						<xs:element name="vignetteType" type="VignetteTypeType"/>
+						<xs:element name="validityStart" type="xs:dateTime"/>
+						<xs:element name="validityEnd" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Csak sikeresen megvásárolt matrica esetén van töltve!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="cost" type="xs:double">
+							<xs:annotation>
+								<xs:documentation>A matricavásárlás kötsége!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="externalCustomerId" type="common:GenIdType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="highwayVignetteStornoRequest">
+		<xs:annotation>
+			<xs:documentation>Matrica vásárlás stornózása!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation>Az eredeti matrica vásárlási kérésben megadott requestId alapján lehet meghívni!</xs:documentation>
+			</xs:annotation>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicRequestType">
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="transactionId" type="common:GenIdType">
+								<xs:annotation>
+									<xs:documentation>A matricavásárlás tranzakció azonosítója</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="highwayVignetteStornoResponse">
+		<xs:annotation>
+			<xs:documentation>Matrica vásárlás stornó válasz!</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="HighwayVignetteBasicResponseType" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

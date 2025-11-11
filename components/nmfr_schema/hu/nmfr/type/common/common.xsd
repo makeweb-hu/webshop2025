@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 (x64) (http://www.altova.com) by Agnes Septey (i-Cell Mobilsoft Zrt.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://common.types.nmfr.hu/common"
+		   xmlns="http://common.types.nmfr.hu/common" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		   targetNamespace="http://common.types.nmfr.hu/common" elementFormDefault="qualified"
+		   attributeFormDefault="unqualified">
+	<xs:simpleType name="ISOCountryCodeA2Type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="3"/>
+			<xs:pattern value="[A-Z]{1,3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CountryCodeType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="3"/>
+			<xs:pattern value="[A-Z]{1,3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VersionType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="3"/>
+			<xs:maxLength value="6"/>
+			<xs:pattern value="[0-9]{1,2}\.[0-9]{1,3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GenIdType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="46"/>
+			<xs:pattern value="[a-zA-Z0-9_]{5,46}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CommonIdType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+			<xs:pattern value="[+a-zA-Z0-9_/=]{1,30}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LongIdType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="256"/>
+			<xs:pattern value="[a-zA-Z0-9\.\-]{5,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GUIDType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="36"/>
+			<xs:pattern value="[a-zA-Z0-9\-]{36}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="UserNameType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+			<xs:pattern value="[a-zA-Z0-9\-@\.]{6,30}"/>
+		</xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="UserNameQueryType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+			<xs:maxLength value="30"/>
+			<xs:pattern value="[a-zA-Z0-9\-@\.]{3,30}"/>
+		</xs:restriction>
+    </xs:simpleType>
+	<xs:simpleType name="SimpleText15Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText4000Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText255Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText255NotBlankType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+			<xs:whiteSpace value="collapse" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText150Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="150"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText100Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText50Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleTextNotBlank50Type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="50"/>
+			<xs:whiteSpace value="collapse" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText35Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="35"/>
+		</xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SimpleText30Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+	<xs:simpleType name="Min3Max30SimpleTextShieldedType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+			<xs:minLength value="3"/>
+			<xs:whiteSpace value="collapse" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText3To100Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">String of minimum 3 and maximum 100 characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="3"/>
+			<xs:maxLength value="100"/>
+			<xs:pattern value=".{3,100}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText3To50Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">String of minimum 3 and maximum 50 characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="3"/>
+			<xs:maxLength value="50"/>
+			<xs:pattern value=".{3,50}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText3To100NotBlankType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">String of minimum 3 and maximum 100  characters, not blank</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="SimpleText3To100Type">
+			<xs:pattern value=".*[^\s].*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText2To100Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">String of minimum 2 and maximum 100 characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="2"/>
+			<xs:maxLength value="100"/>
+			<xs:pattern value=".{2,100}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText2To100NotBlankType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">String of minimum 2 and maximum 100  characters, not blank</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="SimpleText2To100Type">
+			<xs:pattern value=".*[^\s].*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText30ShieldedNotBlankType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+			<xs:minLength value="1"/>
+			<xs:whiteSpace value="collapse" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText200ShieldedNotBlankType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="200"/>
+			<xs:minLength value="1"/>
+			<xs:whiteSpace value="collapse" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SimpleText4000ShieldedNotBlankType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4000"/>
+			<xs:minLength value="1"/>
+			<xs:whiteSpace value="collapse" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Text50Type">
+		<xs:restriction base="common:SimpleText50Type">
+			<xs:minLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Text150Type">
+		<xs:restriction base="common:SimpleText150Type">
+			<xs:minLength value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xsd:simpleType name="Min3Max45LengthTextType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="3"/>
+			<xsd:maxLength value="45"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xs:simpleType name="ResultCodeType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{2,}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FunctionCodeType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9A-Z_]{2,}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LicensePlateNumberType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="3"/>
+			<xs:pattern value="[A-Z0-9ÖŐÜŰ]{3,15}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VehicleCategoryType">
+		<xs:annotation>
+			<xs:documentation>Ez a típus a vehicle:CategoryType enumerált típus szöveges megfelelője, tartalmaz ugyan az lesz, de a későbbi modosulásokra való tekintettel valahol ez a típus van használva hogy a fogadó kliens ne hasaljon el ha bejön egy újabb típus. Jelenlegi értékek: B2, J2, J3, J4, D1</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="3"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="[A-Z0-9]{1,3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EuroCodeType">
+		<xs:annotation>
+			<xs:documentation>Tartalma E1, E2, E3...stb lehet. Azért nem enumerált hogy ne kelljen az interface-ekhez nyúlni ha behoznak egy újat. Felépítése mindíg: EURO[kategória szám]</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="6"/>
+			<xs:pattern value="E[0-9]{1,2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EmailType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9._%+-]+@[A-Za-z0-9.+-]+\.[A-Za-z]{2,4}"/>
+		</xs:restriction>
+    </xs:simpleType>
+	<xs:simpleType name="EmailQueryType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+			<xs:pattern value="[A-Za-z0-9._%+-@]{3,128}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="PhoneType">
+		<xs:annotation>
+			<xs:documentation>Nemzetközi formátum  pl.:+36301234567. + jel opcionális backward compatibilitás miatt!</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[+]{0,1}[0-9]{10,15}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PinCodeType">
+		<xs:annotation>
+			<xs:documentation>Pin kód típus elfelejtett jelszó generálásánál!</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:short">
+			<xs:minInclusive value="1000"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VatNumberType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="6"/>
+			<xs:maxLength value="15"/>
+			<xs:pattern value="[0-9-]{6,15}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EuVatNumberType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="15"/>
+			<xs:pattern value="[0-9A-Z\-]{1,15}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LanguageType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="HU"/>
+			<xs:enumeration value="EN"/>
+			<xs:enumeration value="DE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NumberIdType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="2"/>
+			<xs:maxLength value="12"/>
+			<xs:pattern value="[0-9]{2,12}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NumberId16Type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="2"/>
+			<xs:maxLength value="12"/>
+			<xs:pattern value="[0-9]{2,12}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Number6Type">
+		<xs:restriction base="xs:int">
+			<xs:totalDigits value="6"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RequestChannelType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="WEB"/>
+			<xs:enumeration value="USZI"/>
+			<xs:enumeration value="MOBIL_APP"/>
+			<xs:enumeration value="CALL"/>
+			<xs:enumeration value="SMS"/>
+			<xs:enumeration value="RESELLER"/>
+			<xs:enumeration value="OTHER"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WeekNumberType">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1" />
+			<xs:maxInclusive value="53" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TranzactionPhaseType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="P">
+				<xs:annotation>
+					<xs:documentation>Prepared, előkészítve</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="S">
+				<xs:annotation>
+					<xs:documentation>Started, Elindítva</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="F">
+				<xs:annotation>
+					<xs:documentation>Finished, befejezve</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNKNOWN">
+				<xs:annotation>
+					<xs:documentation>Ismeretlen</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TrnResultType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="S">
+				<xs:annotation>
+					<xs:documentation>Siker!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TIO">
+				<xs:annotation>
+					<xs:documentation>Ügyfél nem fejezte be a vásárlási folyamatot!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RQFA">
+				<xs:annotation>
+					<xs:documentation>Sikertelen fizetés, ügyfél visszautasította a fizetést!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OMO">
+				<xs:annotation>
+					<xs:documentation>Fedezethiány miatt meghiusult! Tipikusan user interakció nélküli hívásoknál lehetséges!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CUC">
+				<xs:annotation>
+					<xs:documentation>Ügyfél által megszakított folyamat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PFTIO">
+				<xs:annotation>
+					<xs:documentation>Transaction expired</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EDBO">
+				<xs:annotation>
+					<xs:documentation>Error during database operation</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RPNS">
+				<xs:annotation>
+					<xs:documentation>Sikertelen fizetés, viszonteladó visszautasította a fizetést!</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNKNOWN">
+				<xs:annotation>
+					<xs:documentation>Ismeretlen/definiálatlan érték</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BusinessType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PUBLIC_SERVICE">
+                <xs:annotation>
+                    <xs:documentation>közszolgáltatás</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="BUSINESS_PRIV">
+                <xs:annotation>
+                    <xs:documentation>üzleti értékesítés – magán érdekszférában</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="BUSINESS_GOV">
+                <xs:annotation>
+                    <xs:documentation>üzleti értékesítés – állami érdekszférában</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="CurrencyType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="2"/>
+			<xs:maxLength value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AztecCodeType">
+		<xs:restriction base="xs:string">
+			<xs:length value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACTIVE">
+				<xs:annotation>
+					<xs:documentation>Active</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INACTIVE">
+				<xs:annotation>
+					<xs:documentation>Inactive</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DELETED">
+				<xs:annotation>
+					<xs:documentation>Deleted</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VisibleStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACTIVE">
+				<xs:annotation>
+					<xs:documentation>Active</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INACTIVE">
+				<xs:annotation>
+					<xs:documentation>Inactive</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xsd:simpleType name="NonNegativeIntegerType">
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="0" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xs:complexType name="KeyValueBasicType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="GenIdType" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ContactType">
+		<xs:sequence>
+			<xs:element name="name" type="common:SimpleText150Type"/>
+			<xs:element name="phone" type="common:PhoneType"/>
+			<xs:element name="email" type="common:EmailType"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="common:GenIdType" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="CustomerContactType">
+		<xs:complexContent>
+			<xs:extension base="common:ContactType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CustomerContactListType">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="contact" type="CustomerContactType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="QueryDetails">
+		<xs:sequence>
+			<xs:element name="totalRows" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Teljes rekordszám, ami a lekérdezési feltételekkel elérhető</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="maxPage" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Ennyi lap van összesen a kért rowCount/page paraméter alapján</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="rows" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Adott lapra eső lekérdezett rekordok száma, aktuális result set rowcount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="page" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Query-ben jött, a kért lap sorszáma</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IdName50Type">
+        <xs:sequence>
+            <xs:element name="id" type="CommonIdType"/>
+            <xs:element name="name" type="SimpleTextNotBlank50Type" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+	<xs:complexType name="GPSCoordType">
+		<xs:sequence>
+			<xs:element name="lat">
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="18"/>
+						<xs:fractionDigits value="14"/>
+						<xs:maxExclusive value="9999.99999999999999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="long">
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="18"/>
+						<xs:fractionDigits value="14"/>
+						<xs:maxExclusive value="9999.99999999999999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="time" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>UTC</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+    <xs:complexType name="TranslationType">
+        <xs:annotation>
+            <xs:documentation>A nyelvesítés fordítási értéke adott nyelven</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="language" type="LanguageType">
+                <xs:annotation>
+                    <xs:documentation>A fordítás nyelve</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="SimpleText4000ShieldedNotBlankType">
+                <xs:annotation>
+                    <xs:documentation>A fordítás tartalma</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DictionaryType">
+        <xs:annotation>
+            <xs:documentation>Nyelvesített szöveg érték</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="translations" type="TranslationType" maxOccurs="unbounded" minOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

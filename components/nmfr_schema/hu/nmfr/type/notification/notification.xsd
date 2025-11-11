@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by Agnes Septey (i-Cell Mobilsoft Zrt.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://common.types.nmfr.hu/common" xmlns:commonserv="http://common.types.nmfr.hu/commonservice" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns="http://notification.types.nmfr.hu/notification" xmlns:commonproduct="http://product.types.nmfr.hu/common" xmlns:commonext="http://common.types.nmfr.icellmobilsoft.hu/external/common" targetNamespace="http://notification.types.nmfr.hu/notification" elementFormDefault="qualified" attributeFormDefault="unqualified" jaxb:version="2.0">
+	<xs:import namespace="http://common.types.nmfr.hu/common" schemaLocation="../common/common.xsd"/>
+	<xs:import namespace="http://common.types.nmfr.hu/commonservice" schemaLocation="../common/commonservice.xsd"/>
+	<xs:import namespace="http://product.types.nmfr.hu/common" schemaLocation="../product/common.xsd"/>
+	<xs:import namespace="http://common.types.nmfr.icellmobilsoft.hu/external/common" schemaLocation="../external/common/common.xsd"/>
+	<xs:annotation>
+		<xs:documentation>
+V1.0 
+    - nincs változás
+V 1.1
+    - nincs változás
+V1.2
+    - nincs változás
+V 1.3
+    - context -ben a requestId és a requestRootId típusa változott!
+    - NotificationCodeType enum prefix törölve!
+V 1.4
+	- Notification hívásba bekerült egy paraméter lista, amibe tetszőleges paramétereket lehet átadni a notification hívásban.
+V 1.5
+	- új notification code: CHARGE_STOPPED
+V 1.6
+	- új notification code: WILL_START
+</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="NotificationCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="STOPPED"><xs:annotation><xs:documentation>Parkolás leállt</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="WILL_STOP"><xs:annotation><xs:documentation>Parkolás le fog állni a paraméterben megadott idő múlva</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="EXCEEDED_TIME"><xs:annotation><xs:documentation>Tranzakció átlépett egy idő korlátot, limitet</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="EXCEEDED_MONEY"><xs:annotation><xs:documentation>Tranzakció átlépett egy költség határt</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="CHARGE_STOPPED"><xs:annotation><xs:documentation>Díjfizetés megszűnt, innentől a tranzakcióval kapcsolatban nem lesz allokációs igény. (pl.: Parkolásnál átváltott a parkolás napijegy-es módba)</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="WILL_START"><xs:annotation><xs:documentation>Előjegyzett parkolás el fog indulni</xs:documentation></xs:annotation></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="NotificationType">
+		<xs:sequence>
+			<xs:element name="notificationCode" type="NotificationCodeType"/>
+			<xs:element name="notificationValue" type="xs:double" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NotificationTypeList">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="notification" type="NotificationType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="KeyValueType">
+		<xs:sequence>
+			<xs:element name="name" type="common:CommonIdType"/>
+			<xs:element name="value" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ParameterListType">
+		<xs:sequence>
+			<xs:element name="parameter" type="KeyValueType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="BatchPushRequest">
+		<xs:annotation>
+			<xs:documentation>Batch notification request</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonserv:BasicRequestType">
+					<xs:sequence>
+						<xs:element name="batchId" type="common:GenIdType" minOccurs="0" />
+						<xs:element name="pushList" type="commonext:PushType" minOccurs="0" maxOccurs="1000"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="notificationRequest">
+		<xs:annotation>
+			<xs:documentation>Notification request</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonserv:BasicRequestType">
+					<xs:sequence>
+						<xs:element name="timeStamp" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>Az esemény időpontja!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="transactionId" type="common:GenIdType">
+							<xs:annotation>
+								<xs:documentation>Az értesítéssel kapcsolatos tranzakció azonosítója az NMFR rendszerében!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="notificationType" type="NotificationType">
+							<xs:annotation>
+								<xs:documentation>Az esemény típusa! Előre definiált konstansok lehetnek! Külön dokumentumban lesznek definiálva!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="costInfo" type="commonproduct:AllocatedCostInfoType">
+							<xs:annotation>
+								<xs:documentation>Ay esemény időpontjában aktuális költséginformációk!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="defaultSMSText" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Alapértelmezett szöveges üzenet az ügyfél felé!</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="parameters" type="ParameterListType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Általános paraméter lista, ha a notification-hoz tartozó paraméterket lehet kapcsolni. Key/value lista. pl.: name=STOP_REASON value=NORMAL</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="notificationResponse">
+		<xs:annotation>
+			<xs:documentation>Notification response, technikai visszaigazolás</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="commonserv:BasicResponseType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
