@@ -29,9 +29,10 @@ class StatikusSzoveg extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['nev', 'tartalom_hu'], 'required'],
+            [['nev'], 'required'],
             [['tartalom_hu'], 'string'],
             [['nev'], 'string', 'max' => 255],
+            [['tipus'], 'safe'],
         ];
     }
 
@@ -49,13 +50,48 @@ class StatikusSzoveg extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function types() {
+        return [
+            'rovid_szoveg' => 'Rövid szöveg',
+            'hosszu_szoveg' => 'Hosszú szöveg',
+            'formazott_szoveg' => 'Formazott szöveg',
+            'html' => 'HTML',
+            'fajl' => 'Fajl',
+        ];
+    }
+
     public static function get($name) {
-        return StatikusSzoveg::findOne(["nev" => $name])->tartalom_hu;
+        $raw = StatikusSzoveg::findOne(["nev" => $name])->tartalom_hu;
+        $model = StatikusSzoveg::findOne(["nev" => $name]);
+        if ($model->tipus === 'rovid_szoveg') {
+            return htmlspecialchars($raw);
+        } else if ($model->tipus === 'hosszu_szoveg') {
+            $raw = htmlspecialchars($raw);
+            $raw = str_replace("\n", "<br>", $raw);
+            return $raw;
+        } else if ($model->tipus === 'fajl') {
+            $file = Fajl::findOne($raw);
+            if (!$file) {
+                return '/img/no-photo.jpg';
+            }
+            return $file->url;
+        } else {
+            // html, formazott_szoveg
+            return $raw;
+        }
     }
 
     public static function getMultiline($name) {
         $str = StatikusSzoveg::findOne(["nev" => $name])->tartalom_hu;
         $str = str_replace("\n", "<br>", $str);
         return $str;
+    }
+
+    public function columnViews() {
+        return [
+            'tipus' => function () {
+                return '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">'.self::types()[$this->tipus] . '</span>';
+            },
+        ];
     }
 }

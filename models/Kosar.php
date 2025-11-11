@@ -103,6 +103,7 @@ class Kosar extends \yii\db\ActiveRecord
             'payment_status' => 'Fizetés',
             'shipping_status' => 'Teljesítés',
             'status' => 'Státusz',
+            'rendelesszam_fancy' => 'Rendelésszám',
         ];
     }
 
@@ -458,6 +459,12 @@ class Kosar extends \yii\db\ActiveRecord
 
     public function columnViews() {
         return [
+            'rendelesszam_fancy' => function () {
+                if ($this->statusz === 'nincs_teljesitve') {
+                    return '<span class="font-bold">' . $this->rendelesszam . '</span>';
+                }
+                return $this->rendelesszam;
+            },
             'idopont' => function () {
                 return $this->megrendeles_idopontja ?: $this->idopont;
             },
@@ -490,7 +497,7 @@ class Kosar extends \yii\db\ActiveRecord
             },
             'shipping_status' => function () {
                 $color = 'gray';
-                if ($this->statusz === 'torolve') {
+                if ($this->statusz === 'elvetve') {
                     $color = 'red';
                 } else if ($this->statusz === 'teljesitve') {
                     $color = 'green';
@@ -519,7 +526,7 @@ class Kosar extends \yii\db\ActiveRecord
 
     public static function statuses() {
         return [
-            'nincs_teljesitve' => 'Nincs teljesítve',
+            'nincs_teljesitve' => 'Új rendelés',
             'adatok_modositva' => 'Adatok módosítva',
             'atveheto' => 'Átvehető',
             'kiszallitas_alatt' => 'Kiszállítás alatt',

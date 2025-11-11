@@ -5,7 +5,7 @@ $remember_me = Yii::$app->request->get('remember_me', '0');
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Flavon</title>
+    <title>Makeweb</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

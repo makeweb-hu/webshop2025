@@ -557,11 +557,11 @@ $("body").click(function () {
 });
 
 $("[data-hamburger-icon]").click(function (e) {
-    $("[data-mobile-menu]").removeClass("invisible");
+    $("[data-mobile-menu]").show();
 });
 
 $("[data-close-mobile-menu]").click(function (e) {
-    $("[data-mobile-menu]").addClass("invisible");
+    $("[data-mobile-menu]").hide();
 });
 
 $("[data-logout]").click(function () {

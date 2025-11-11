@@ -6,7 +6,7 @@ use app\components\Helpers;
 use Yii;
 
 /**
- * This is the model class for table "variacio".
+ * This is the model class for table "vaiacio".
  *
  * @property integer $id
  * @property integer $termek_id

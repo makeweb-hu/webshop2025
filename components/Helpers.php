@@ -159,7 +159,7 @@ class Helpers {
     public static function nextOrderNumber() {
         // 16603324
         // 6015874
-        return strval(6015874 + intval(Kosar::find()->where(['megrendelve' => 1])->count()) + 1);
+        return strval(6000000 + intval(Kosar::find()->where(['megrendelve' => 1])->count()) + 1);
     }
 
     public static function createUrl($text){

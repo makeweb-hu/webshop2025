@@ -46,7 +46,7 @@ class Termek extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['nev', 'ar', 'egyseg_id'], 'required'],
+            [['nev', 'egyseg_id'], 'required'],
             [['cikkszam'], 'unique'],
             [['oldal_id', 'foto_id', 'ar', 'akcios', 'akcios_ar', 'akcio_szazalek', 'afa', 'statusz', 'kategoria_id', 'keszlet'], 'integer'],
             [['akcio_tipusa', 'rovid_leiras', 'leiras'], 'string'],
@@ -272,14 +272,43 @@ class Termek extends \yii\db\ActiveRecord
         return $ids;
     }
 
+    public function renderMainProductPriceForAdmin() {
+        $variations = $this->variations;
+        if (count($variations) <= 1) {
+            if (!$this->ar) {
+                return '(nincs ar)';
+            }
+            $price = Helpers::formatMoney($this->ar);
+            if ($this->akcios_ar) {
+                $price = '<span style="text-decoration:line-through;opacity:0.5">'.$price.'</span> ' . Helpers::formatMoney($this->akcios_ar);
+            }
+            return $price;
+        }
+        $smallest = 500000000000;
+        $smallestVariation = null;
+        foreach ($variations as $variation) {
+            if (!$variation->ar) {
+                continue;
+            }
+            if ($variation->currentPrice() < $smallest) {
+                $smallest = $variation->currentPrice();
+                $smallestVariation = $variation;
+            }
+        }
+        if (!$smallestVariation) {
+            return '(nincs ár)';
+        }
+        $price = Helpers::formatMoney($smallestVariation->ar);
+        if ($smallestVariation->akcios_ar) {
+            $price = '<span style="text-decoration:line-through;opacity:0.5">'.$price.'</span> ' . Helpers::formatMoney($smallestVariation->akcios_ar);
+        }
+        return $price . '-tól';
+    }
+
     public function columnViews() {
         return [
             'ar' => function () {
-                $price = Helpers::formatMoney($this->ar);
-                if ($this->akcios_ar) {
-                    $price = '<span style="text-decoration:line-through;opacity:0.5">'.$price.'</span> ' . Helpers::formatMoney($this->akcios_ar);
-                }
-                return $price;
+               return $this->renderMainProductPriceForAdmin();
             },
             'kategoria' => function () {
                 $cat = $this->category;

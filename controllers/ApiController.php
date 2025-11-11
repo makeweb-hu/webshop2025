@@ -58,7 +58,7 @@ use app\models\Session;
 use app\models\Texts;
 
 
-class ApiController extends \yii\web\Controller
+class űApiController extends \yii\web\Controller
 {
     const JOB_KEY = '6FSA67C3ICpUJBVm1NVb';
 
@@ -595,7 +595,7 @@ class ApiController extends \yii\web\Controller
             $item->save(false);
         }
 
-        $cart->rendelesszam = 'BOR' . Helpers::nextOrderNumber();
+        $cart->rendelesszam = 'ORD' . Helpers::nextOrderNumber();
         $cart->nev = $name;
         $cart->email = $email;
         $cart->telefonszam = $phone;

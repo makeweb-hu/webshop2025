@@ -112,7 +112,8 @@ $tabs['second'] = ['title'=>'Meta', 'url'=>'/admin/edit-product-meta?id='.$model
         'value' => $model->foto_id ?? '',
     ])?>
 
-    <div style="display: flex;" class="more-product-photos">
+
+    <div style="display: none;" class="more-product-photos">
         <?=\app\components\Helpers::render('ui/file', [
                 // 'label' => 'Fotó 1',
                 'name' => 'foto_1',

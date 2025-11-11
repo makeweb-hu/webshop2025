@@ -63,9 +63,9 @@ class Kategoria extends \yii\db\ActiveRecord
 
     public static function enumerateAll($parentId = null) {
         if ($parentId) {
-            $all = Kategoria::find()->where(['szulo_id' => $parentId])->orderBy('id ASC')->all();
+            $all = Kategoria::find()->where(['szulo_id' => $parentId])->orderBy('lokalis_sorrend ASC, id ASC')->all();
         } else {
-            $all = Kategoria::find()->where('szulo_id is null')->orderBy('id ASC')->all();
+            $all = Kategoria::find()->where('szulo_id is null')->orderBy('lokalis_sorrend ASC, id ASC')->all();
         }
         $superAll = [];
         foreach ($all as $item) {
@@ -191,6 +191,15 @@ class Kategoria extends \yii\db\ActiveRecord
         return '/' . $this->page->url;
     }
 
+    public function getFullName() {
+        $parentHtml = '';
+        $parents = $this->allParents();
+        foreach ($parents as $p) {
+            $parentHtml .= $p->nev . ' » ';
+        }
+        return ($parentHtml ? '<span style="opacity:0.6">'.$parentHtml.'</span>' : '') . $this->nev;
+    }
+
     public function columnViews() {
         return [
             'fancy_name' => function () {
@@ -207,12 +216,7 @@ class Kategoria extends \yii\db\ActiveRecord
                 </span>';
             },
             'full_name' => function () {
-                $parentHtml = '';
-                $parents = $this->allParents();
-                foreach ($parents as $p) {
-                    $parentHtml .= $p->nev . ' » ';
-                }
-                return ($parentHtml ? '<span style="opacity:0.6">'.$parentHtml.'</span>' : '') . $this->nev;
+                return $this->fullName;
             },
         ];
     }

@@ -46,7 +46,7 @@ $tab = Yii::$app->request->get('tab', '');
         ]);
     },
     'actions' => [
-        [ 'type' => 'modal', 'icon' =>'edit', 'title' => 'Metaadatokg', 'view' => 'forms/edit_meta' ],
+        [ 'type' => 'modal', 'icon' =>'edit', 'title' => 'Metaadatok', 'view' => 'forms/edit_meta' ],
         // [ 'type' => 'confirm', 'icon'=>'delete','title' => 'Töröl', 'description' => "Biztos végre szeretné hajtani a műveletet?", 'url' => '/admin-api/delete?class=Fizetes' ],
     ]
 ])?>

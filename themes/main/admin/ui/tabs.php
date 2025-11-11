@@ -1,17 +1,6 @@
 <div data-tabs>
-    <div class="sm:hidden">
-        <label for="tabs" class="sr-only">Select a tab</label>
-        <select data-mobile-select name="tabs" class="block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
 
-            <?php foreach (($tabs ?? []) as $tabKey => $tab): ?>
-
-            <option <?=($active ?? null) === $tabKey?'selected':''?> data-url="<?=$tab['url'] ?? '#'?>"><?=$tab['title'] ?></option>
-
-            <?php endforeach; ?>
-
-        </select>
-    </div>
-    <div class="hidden sm:block">
+    <div class="sm:block">
 
         <div class="border-b border-gray-200">
 
@@ -64,7 +53,7 @@
 
             <?php else: ?>
 
-            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <nav class="-mb-px flex space-x-8 flex-wrap" aria-label="Tabs">
 
                 <?php foreach (($tabs ?? []) as $tabKey => $tab): ?>
 

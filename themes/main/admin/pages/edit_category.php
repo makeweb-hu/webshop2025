@@ -58,6 +58,13 @@ $model = \app\models\Kategoria::findOne($id) ?: new \App\Models\Kategoria();
         'value' => $model->foto_id ?? '',
     ])?>
 
+    <?=\app\components\Helpers::render('ui/input', [
+        'label' => 'Sorrend',
+        'name' => 'lokalis_sorrend',
+        'placeholder' => 'Opcionális',
+        'value' => $model->lokalis_sorrend ?? '',
+    ])?>
+
     <div class="mt-10 flex justify-end">
 
         <button type="submit" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm">

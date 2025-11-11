@@ -20,7 +20,7 @@ if ($model->csomagszam) {
     $subactions[] = ['GLS címke elkészítése', 'data-create-label', $model->id];
 }
 
-$subactions[] = ['Nyomtatás', 'data-print-order', $model->id];
+// $subactions[] = ['Nyomtatás', 'data-print-order', $model->id];
 
 ?>
 

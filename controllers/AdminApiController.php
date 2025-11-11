@@ -13,6 +13,7 @@ use app\models\Bejelentkezes2fa;
 use app\models\EmailSablon;
 use app\models\Fajl;
 use app\models\Felhasznalo;
+use app\models\Kategoria;
 use app\models\Kosar;
 use app\models\Munkamenet;
 use app\models\StatikusSzoveg;
@@ -20,6 +21,7 @@ use app\models\Szamla;
 use app\models\Termek;
 use app\models\TermekTulajdonsag;
 use app\models\TermekTulajdonsagErtek;
+use app\models\Vasarlo;
 use Yii;
 use yii\base\BaseObject;
 use yii\web\Cookie;
@@ -939,6 +941,22 @@ class AdminApiController extends \yii\web\Controller {
 
         if ($class === '(global)') {
 
+                // Rendelés
+                foreach (Kosar::find()->where(['and', ['=', 'megrendelve', 1], [ 'or',  ['like', 'rendelesszam', $q], ['like', 'nev', $q], ['like', 'email', $q], ['like', 'telefonszam', $q]]])->orderBy('id DESC')->limit(5)->all() as $item) {
+                    $results[] = [
+                        'id' => '/admin/order?id=' . $item->id,
+                        'html' => '<span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-indigo-200 text-gray-800">Rendelés</span> '  . $item->rendelesszam . ' | ' . $item->nev . ' | ' . $item->email . ' | ' . $item->telefonszam . ' | ' . Helpers::formatMoney($item->total) . '</b>'
+                    ];
+                }
+
+
+                // Vásárló
+                foreach (Vasarlo::find()->where([ 'or',  ['like', 'nev', $q], ['like', 'telefonszam', $q], ['like', 'email', $q]])->limit(5)->all() as $item) {
+                    $results[] = [
+                        'id' => '/admin/customer?id=' . $item->id,
+                        'html' => '<span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-indigo-200 text-gray-800">Vásárló</span> '  . $item->nev . ' | ' . $item->email . ' | ' . $item->telefonszam . '</b>'
+                    ];
+                }
 
                 // Felhasználó neve
                 foreach (Felhasznalo::find()->where([ 'or',  ['like', 'nev', $q], ['like', 'email', $q]])->limit(5)->all() as $item) {
@@ -953,7 +971,15 @@ class AdminApiController extends \yii\web\Controller {
                 foreach (Termek::find()->where([ 'or',  ['like', 'nev', $q], ['like', 'cikkszam', $q]])->limit(5)->all() as $item) {
                     $results[] = [
                         'id' => '/admin/edit-product?id=' . $item->id,
-                        'html' => '<span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-indigo-200 text-gray-800">Termék</span> '  . $item->nev . '</b>'
+                        'html' => '<span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-indigo-200 text-gray-800">Termék</span> '  . $item->nev . ' | ' . $item->cikkszam . '</b>'
+                    ];
+                }
+
+                // Kategória
+                foreach (Kategoria::find()->where([ 'or',  ['like', 'nev', $q]])->limit(5)->all() as $item) {
+                    $results[] = [
+                        'id' => '/admin/edit-category?id=' . $item->id,
+                        'html' => '<span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-indigo-200 text-gray-800">Kategória</span> '  . $item->fullName . '</b>'
                     ];
                 }
 
