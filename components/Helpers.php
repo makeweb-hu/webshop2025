@@ -169,7 +169,7 @@ class Helpers {
         // 2) Unicode normalizálás + ékezetek eltávolítása, ha elérhető INTL
         if (class_exists('Transliterator')) {
             // pl. "Árvíztűrő tükörfúrógép" -> "Arvizturo tukorfurogep"
-            $trans = Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC; Latin-ASCII');
+            $trans = \Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC; Latin-ASCII');
             $text = $trans->transliterate($text);
         } else {
             // Biztonsági fallback

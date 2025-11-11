@@ -48,8 +48,15 @@ $('[data-table-page-select]').change(function () {
 });
 
 $('[data-table-search-input]').on('keypress', function(e) {
+    function updateQueryParam(key, value) {
+        const params = new URLSearchParams(window.location.search);
+        params.set(key, value);
+        return '?' + params.toString();
+    }
+
     if (e.which == 13) {
-        window.location.href = '?q=' + encodeURIComponent($(this).val());
+
+        window.location.href = updateQueryParam('q', $(this).val());
     }
 });
 

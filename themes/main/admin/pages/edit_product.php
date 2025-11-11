@@ -67,6 +67,7 @@ $tabs['second'] = ['title'=>'Meta', 'url'=>'/admin/edit-product-meta?id='.$model
                 'tooltip' => 'Üresen hagyva a rendszer generálja automatikusan.',
                 'label' => 'Cikkszám',
                 'type' => 'text',
+                'placeholder' => 'Opcionális',
                 'value' => $model->cikkszam,
             ])?>
         </div>
@@ -76,7 +77,7 @@ $tabs['second'] = ['title'=>'Meta', 'url'=>'/admin/edit-product-meta?id='.$model
     <?=\app\components\Helpers::render('ui/toggle', [
         'label' => 'Státusz',
         'name' => 'statusz',
-        'value' => $model->statusz ?: 0,
+        'value' => $model->isNewRecord ? 1 : ($model->statusz ?: 0),
     ])?>
 
     <?=\app\components\Helpers::render('ui/lookup', [
