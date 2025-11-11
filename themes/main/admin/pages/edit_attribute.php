@@ -78,21 +78,21 @@ $model = \app\models\Tulajdonsag::findOne($id) ?: new \App\Models\Tulajdonsag();
         'name' => 'lathato',
         'label' => 'Látható',
         'type' => 'text',
-        'value' => $model->lathato,
+        'value' => $model->isNewRecord ? 1 : ($model->lathato ?: 0),
     ])?>
 
     <?=\app\components\Helpers::render('ui/toggle', [
         'name' => 'szurheto',
         'label' => 'Szűrhető',
         'type' => 'text',
-        'value' => $model->szurheto,
+        'value' => $model->szurheto ?: 0,
     ])?>
 
     <?=\app\components\Helpers::render('ui/toggle', [
         'name' => 'kotelezo',
         'label' => 'Kötelező',
         'type' => 'text',
-        'value' => $model->kotelezo,
+        'value' => $model->kotelezo ?: 0,
     ])?>
 
 

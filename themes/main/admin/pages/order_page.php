@@ -289,7 +289,7 @@ $subactions[] = ['Nyomtatás', 'data-print-order', $model->id];
                 <?php endif; ?>
 
                 <div style="display: flex; justify-content: center" class="mb-4">
-                     <img src="<?=\app\components\Gravatar::generate($model->getPrimaryKey(), 80)?>" width="80" style="border-radius: 50%; <?=$edit_mode?'position:relative;left:8px;':''?>" />
+                     <img src="<?=\app\components\Gravatar::generate($model->getPrimaryKey(), 80)?>" width="80" style="border-radius: 50%; <?=$edit_mode?'transform:translateX(8px)':''?>" />
                 </div>
 
                 <div class="text-center">

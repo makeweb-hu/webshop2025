@@ -1,12 +1,17 @@
 <?php
 namespace app\components;
 
+use app\models\Beallitasok;
 use app\models\Felhasznalo;
 
 class TwoFactorAuth {
+    public static function getIssuer() {
+        return Beallitasok::get('domain');
+    }
+
     public static function generateSecret($userEmail) {
         require_once 'components/google-authenticator/autoload.php';
-        $issuer = "flavon";
+        $issuer = self::getIssuer();
         $accountName = $userEmail;
         $secretFactory = new \Dolondro\GoogleAuthenticator\SecretFactory();
         $secret = $secretFactory->create($issuer, $accountName);
@@ -27,7 +32,7 @@ class TwoFactorAuth {
             $user->save(false);
             return $secret;
         } else {
-            return new \Dolondro\GoogleAuthenticator\Secret("flavon", $userEmail, $user->ketfaktoros_kulcs);
+            return new \Dolondro\GoogleAuthenticator\Secret(self::getIssuer(), $userEmail, $user->ketfaktoros_kulcs);
         }
     }
 

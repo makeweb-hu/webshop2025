@@ -3247,7 +3247,7 @@ select{
 }
 .bg-indigo-600{
     --tw-bg-opacity:1;
-    background-color: #78ae56;
+    background-color: #007cfe;
 }
 .bg-green-50{
     --tw-bg-opacity:1;
@@ -4256,7 +4256,7 @@ select{
 }
 .text-indigo-600{
     --tw-text-opacity:1;
-    color: #78ae56;
+    color: #007cfe;
 }
 .text-gray-500{
     --tw-text-opacity:1;
@@ -5042,7 +5042,7 @@ select{
 }
 .hover\:bg-indigo-700:hover{
     --tw-bg-opacity:1;
-    background-color: #5b8341;
+    background-color: #362065;
 }
 .hover\:bg-green-100:hover{
     --tw-bg-opacity:1;
@@ -5285,7 +5285,7 @@ select{
 }
 .hover\:text-indigo-500:hover{
     --tw-text-opacity:1;
-    color: #5f8b43;
+    color: #362065;
 }
 .hover\:text-blue-600:hover{
     --tw-text-opacity:1;

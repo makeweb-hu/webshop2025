@@ -92,6 +92,7 @@ if ($total === 0) {
                             'model' => $result,
                             'columns' => $columns ?? [],
                             'actions' => $actions ?? [],
+                            'wrap_columns' => $wrap_columns ?? [],
                         ])?>
                     <?php endforeach; ?>
                     </tbody>

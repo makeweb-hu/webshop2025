@@ -162,25 +162,38 @@ class Helpers {
         return strval(6015874 + intval(Kosar::find()->where(['megrendelve' => 1])->count()) + 1);
     }
 
-    public static function createUrl($link){
+    public static function createUrl($text){
+        // 1) Töröljük le a whitespace-eket elejéről/végéről
+        $text = trim($text);
 
-        $search = explode(",",
-            "!,ő,Ő,ű,Ű,ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,ø,Ø,Å,Á,À,Â,Ä,È,É,Ê,Ë,Í,Î,Ï,Ì,Ò,Ó,Ô,Ö,Ú,Ù,Û,Ü,Ÿ,Ç,Æ,Œ,Ű,ű");
-        $replace = explode(",",
-            ",o,o,u,u,c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,o,O,A,A,A,A,A,E,E,E,E,I,I,I,I,O,O,O,O,U,U,U,U,Y,C,AE,OE,u,u");
+        // 2) Unicode normalizálás + ékezetek eltávolítása, ha elérhető INTL
+        if (class_exists('Transliterator')) {
+            // pl. "Árvíztűrő tükörfúrógép" -> "Arvizturo tukorfurogep"
+            $trans = Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC; Latin-ASCII');
+            $text = $trans->transliterate($text);
+        } else {
+            // Biztonsági fallback
+            $text = str_replace(
+                ['Á','á','É','é','Í','í','Ó','ó','Ö','ö','Ő','ő','Ú','ú','Ü','ü','Ű','ű'],
+                ['A','a','E','e','I','i','O','o','O','o','O','o','U','u','U','u','U','u'],
+                $text
+            );
+            $text = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        }
 
+        // 3) Kisbetűsítés
+        $text = strtolower($text);
 
-        $link = str_replace($search, $replace, $link);
+        // 4) Nem alfanumerikus karakterek helyére kötőjel
+        $text = preg_replace('/[^a-z0-9]+/u', '-', $text);
 
-        $link = str_replace(",", " ", $link);
-        $link = str_replace("  ", " ", $link);
-        $link = str_replace(" ", "-", $link);
-        $link = str_replace("/", "-", $link);
+        // 5) Dupla kötőjelek összevonása
+        $text = preg_replace('/-+/', '-', $text);
 
-        $link = strtolower($link);
+        // 6) Trimmelés az elejéről-végéről
+        $text = trim($text, '-');
 
-        return $link;
-
+        return $text;
     }
 
 

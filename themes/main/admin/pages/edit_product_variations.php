@@ -50,6 +50,7 @@ $tabs['second'] = ['title'=>'Meta', 'url'=>'/admin/edit-product-meta?id='.$model
 <?=\app\components\Helpers::render('ui/table', [
     'class' => \app\models\Variacio::class,
     'columns' => ['fancy_name', 'options', 'sku', 'ar', 'statusz'],
+    'wrap_columns' => ['fancy_name'],
     'filter' => function ($query) use ($model) {
         return $query->where(['termek_id' => $model->getPrimaryKey()])->orderBy('id ASC');
     },
