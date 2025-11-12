@@ -351,13 +351,14 @@ $ids = [580, 501, 437, 426, 373, 365, 354, 358, 359, 355, 335, 318, 305, 300, 47
         }
     }
 
-    public function actionProduct($id) {
+    public function actionProduct($id, $variation = '') {
         $model = Termek::findOne($id);
         if (!$model || !$model->statusz) {
             throw new HttpException(404);
         }
         return $this->render('product', [
             'model' => $model,
+            'variationId' => $variation,
         ]);
     }
 

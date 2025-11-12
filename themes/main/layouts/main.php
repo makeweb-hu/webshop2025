@@ -87,7 +87,7 @@ $isScrolled = $path!=='/';
                 </span>
                 <span class="icon" data-show-cart>
                     <img src="/img/dragcards/header/cart.svg" alt="" />
-                    <span class="nr" data-nr-of-cart-items style="display: none;">2</span>
+                    <span class="nr" data-nr-of-cart-items style=""><?=\app\models\Kosar::nr()?></span>
                 </span>
             </div>
 
@@ -339,6 +339,7 @@ $isScrolled = $path!=='/';
     </div>
 </footer>
 
+<?=Yii::$app->controller->renderPartial('@app/themes/main/site/_cart')?>
 <?=Yii::$app->controller->renderPartial('@app/themes/main/layouts/_cookie_consent')?>
 <?=Yii::$app->controller->renderPartial('@app/themes/main/layouts/_login')?>
 <?=Yii::$app->controller->renderPartial('@app/themes/main/layouts/_signup')?>

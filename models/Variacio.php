@@ -200,7 +200,7 @@ class Variacio extends \yii\db\ActiveRecord
     public function getThumbnail() {
         $f = $this->photo;
         if ($f) {
-            return $f->resizePhotoCover(320, 320);
+            return $f->resizePhotoCover(800, 800);
         }
         return '/img/no-photo.jpg';
     }

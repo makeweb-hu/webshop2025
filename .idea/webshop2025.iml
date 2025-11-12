@@ -2,9 +2,9 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/components/dompdf" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/dompdf/dompdf/src" isTestSource="false" packagePrefix="Dompdf\" />
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/dompdf/dompdf/tests" isTestSource="true" packagePrefix="Dompdf\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/components/dompdf/dompdf/dompdf/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/masterminds/html5/src" isTestSource="false" packagePrefix="Masterminds\" />
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/masterminds/html5/test/HTML5" isTestSource="true" packagePrefix="Masterminds\HTML5\Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/masterminds/html5/tests" isTestSource="true" />
@@ -15,21 +15,18 @@
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/phenx/php-svg-lib/tests/Svg" isTestSource="true" packagePrefix="Svg\Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/sabberworm/php-css-parser/src" isTestSource="false" packagePrefix="Sabberworm\CSS\" />
       <sourceFolder url="file://$MODULE_DIR$/components/dompdf/sabberworm/php-css-parser/tests" isTestSource="true" packagePrefix="Sabberworm\CSS\Tests\" />
-      <sourceFolder url="file://$MODULE_DIR$/components/google-authenticator" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/components/google-authenticator/christian-riesen/base32/src" isTestSource="false" packagePrefix="Base32" />
+      <sourceFolder url="file://$MODULE_DIR$/components/dompdf/sabberworm/php-css-parser/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/components/google-authenticator/dolondro/google-authenticator/src" isTestSource="false" packagePrefix="Dolondro\GoogleAuthenticator\" />
       <sourceFolder url="file://$MODULE_DIR$/components/google-authenticator/dolondro/google-authenticator/tests" isTestSource="true" packagePrefix="Dolondro\GoogleAuthenticator\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/components/google-authenticator/dolondro/google-authenticator/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/components/google-authenticator/paragonie/random_compat/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/components/google-authenticator/psr/cache/src" isTestSource="false" packagePrefix="Psr\Cache\" />
-      <sourceFolder url="file://$MODULE_DIR$/components/simple_qrcode" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/components/simple_qrcode/bacon/bacon-qr-code/src" isTestSource="false" packagePrefix="BaconQrCode\" />
       <sourceFolder url="file://$MODULE_DIR$/components/simple_qrcode/bacon/bacon-qr-code/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/components/simple_qrcode/dasprid/enum/src" isTestSource="false" packagePrefix="DASPRiD\Enum\" />
       <sourceFolder url="file://$MODULE_DIR$/components/simple_qrcode/dasprid/enum/test" isTestSource="true" packagePrefix="DASPRiD\EnumTest\" />
       <sourceFolder url="file://$MODULE_DIR$/components/simple_qrcode/simplesoftwareio/simple-qrcode/src" isTestSource="false" packagePrefix="SimpleSoftwareIO\QrCode\" />
       <sourceFolder url="file://$MODULE_DIR$/components/simple_qrcode/simplesoftwareio/simple-qrcode/tests" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/components/excel/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/components/excel/vendor/ezyang/htmlpurifier" />
       <excludeFolder url="file://$MODULE_DIR$/components/excel/vendor/maennchen/zipstream-php" />

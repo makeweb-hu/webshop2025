@@ -12,12 +12,18 @@
         <option value="$PROJECT_DIR$/components/dompdf/phenx/php-svg-lib/tests" />
         <option value="$PROJECT_DIR$/components/dompdf/masterminds/html5/tests" />
         <option value="$PROJECT_DIR$/components/google-authenticator/dolondro/google-authenticator/tests" />
-        <option value="$PROJECT_DIR$/components/simple_qrcode/dasprid/enum/test" />
-        <option value="$PROJECT_DIR$/components/simple_qrcode/simplesoftwareio/simple-qrcode/tests" />
         <option value="$PROJECT_DIR$/components/dompdf/dompdf/dompdf/tests" />
         <option value="$PROJECT_DIR$/components/google-authenticator/paragonie/random_compat/tests" />
         <option value="$PROJECT_DIR$/components/dompdf/sabberworm/php-css-parser/tests" />
+        <option value="$PROJECT_DIR$/components/dompdf/phenx/php-svg-lib/tests" />
+        <option value="$PROJECT_DIR$/components/dompdf/dompdf/dompdf/tests" />
+        <option value="$PROJECT_DIR$/components/simple_qrcode/dasprid/enum/test" />
+        <option value="$PROJECT_DIR$/components/dompdf/masterminds/html5/tests" />
         <option value="$PROJECT_DIR$/components/simple_qrcode/bacon/bacon-qr-code/test" />
+        <option value="$PROJECT_DIR$/components/dompdf/sabberworm/php-css-parser/tests" />
+        <option value="$PROJECT_DIR$/components/simple_qrcode/simplesoftwareio/simple-qrcode/tests" />
+        <option value="$PROJECT_DIR$/components/google-authenticator/dolondro/google-authenticator/tests" />
+        <option value="$PROJECT_DIR$/components/google-authenticator/paragonie/random_compat/tests" />
       </list>
     </option>
   </component>

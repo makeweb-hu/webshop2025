@@ -17,6 +17,13 @@ $sorts = [
     'nev_desc' => 'Ábécé csökkenő',
 ];
 $sortName = $sorts[$sort] ?? 'Olcsóbb elöl';
+
+$productCounts = [
+        'all' => \app\models\Termek::find()->where(['statusz' => 1])->count(),
+];
+foreach (\app\models\Kategoria::find()->all() as $cat) {
+    $productCounts[$cat->page->url] = \app\models\Termek::find()->where(['kategoria_id' => $cat->id, 'statusz' => 1])->count();
+}
 ?>
 
 <div class="products-page">
@@ -115,7 +122,102 @@ $sortName = $sorts[$sort] ?? 'Olcsóbb elöl';
                             <!--
                             <i class="fa-solid fa-circle-notch fa-spin"></i> Szűrők betöltése...
                             -->
-                            Nincsenek elérhető szűrők
+
+                            <?php if (!$category): ?>
+
+
+
+                                <div style="text-align: left; margin-bottom: 10px; text-align: center">
+                                    <b>Kategória</b>
+                                </div>
+
+                            <div style="border-bottom: 1px solid #eaeaea; text-align: left;">
+                                <span style="padding: 15px 0; display: flex; align-items: center; justify-content: space-between;">
+                                            <span>Összes termék <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['all']?>)</span></span>
+                                            <span style="font-size: 200%;">&middot;</span>
+                                        </span>
+                            </div>
+
+                                <div style="border-bottom: 1px solid #eaeaea; text-align: left;">
+                                    <a href="/kartyak" style="padding: 15px 0;  color: #7600ff; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Kártyák <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['kartyak']?>)</span></span>
+
+                                        <img src="/img/dragcards/header-dropdown/arrow.svg" width="12" alt="Dragcards"></a>
+                                </div>
+
+                                <div style="border-bottom: 1px solid #eaeaea; text-align: left;">
+                                    <a href="/tablak" style="padding: 15px 0; color: #7600ff;display: flex; align-items: center; justify-content: space-between;">
+
+                                        <span>Kártyák <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['tablak']?>)</span></span>
+
+                                        <img src="/img/dragcards/header-dropdown/arrow.svg" width="12" alt="Dragcards"></a>
+                                </div>
+
+                                <div style="text-align: left;">
+                                    <a href="/csomagok" style="padding: 15px 0; color: #7600ff;display: flex; align-items: center; justify-content: space-between; ">
+
+                                        <span>Csomagok <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['csomagok']?>)</span></span>
+
+                                        <img src="/img/dragcards/header-dropdown/arrow.svg" width="12" alt="Dragcards"></a>
+                                </div>
+
+                            <?php else: ?>
+
+                                <div style="text-align: left; margin-bottom: 10px; text-align: center">
+                                    <b>Kategória</b>
+                                </div>
+
+                                <div style="border-bottom: 1px solid #eaeaea; text-align: left;">
+                                    <a href="/termekek" style="padding: 15px 0;  color: #7600ff; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Összes termék <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['all']?>)</span></span>
+
+                                        <img src="/img/dragcards/header-dropdown/arrow.svg" width="12" alt="Dragcards"></a>
+                                </div>
+
+                                <div style="border-bottom: 1px solid #eaeaea; text-align: left;">
+                                    <?php if ($category->page->url === 'kartyak'): ?>
+                                        <span style="padding: 15px 0; display: flex; align-items: center; justify-content: space-between;">
+                                            <span>Kártyák <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['kartyak']?>)</span></span>
+                                            <span style="font-size: 200%;">&middot;</span>
+                                        </span>
+                                    <?php else: ?>
+                                    <a href="/kartyak" style="padding: 15px 0;  color: #7600ff; display: flex; align-items: center; justify-content: space-between;">
+                                        Kártyák <img src="/img/dragcards/header-dropdown/arrow.svg" width="12" alt="Dragcards"></a>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div style="border-bottom: 1px solid #eaeaea; text-align: left;">
+                                    <?php if ($category->page->url === 'tablak'): ?>
+
+                                        <span style="padding: 15px 0; display: flex; align-items: center; justify-content: space-between;">
+                                            <span>Táblák <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['tablak']?>)</span></span>
+                                            <span style="font-size: 200%;">&middot;</span>
+                                        </span>
+
+                                    <?php else: ?>
+
+                                        <a href="/tablak" style="padding: 15px 0; color: #7600ff;display: flex; align-items: center; justify-content: space-between;">Táblák <img src="/img/dragcards/header-dropdown/arrow.svg" width="12" alt="Dragcards"></a>
+
+                                    <?php endif; ?>
+                                </div>
+
+                                <div style="text-align: left;">
+                                    <?php if ($category->page->url === 'csomagok'): ?>
+
+                                        <span style="padding: 15px 0; display: flex; align-items: center; justify-content: space-between;">
+                                            <span>Csomagok <span style="font-size: 80%; opacity: 0.5;">(<?=$productCounts['csomagok']?>)</span></span>
+
+                                            <span style="font-size: 200%;">&middot;</span>
+                                        </span>
+
+                                    <?php else: ?>
+
+                                        <a href="/csomagok" style="padding: 15px 0; color: #7600ff;display: flex; align-items: center; justify-content: space-between; ">Csomagok <img src="/img/dragcards/header-dropdown/arrow.svg" width="12" alt="Dragcards"></a>
+
+                                    <?php endif; ?>
+                                </div>
+
+                            <?php endif; ?>
                         </div>
                         <div class="button-row">
                             <div class="btn">

@@ -6,6 +6,19 @@ $category = $model->category;
 $moreProducts = \app\models\Termek::find()->where(['and', ['=', 'kategoria_id', $model->kategoria_id], ['<>', 'id', $model->id]])
     ->limit(60)
     ->orderBy('id ASC')->all();
+
+$variations = $model->variations;
+
+$variation = \app\models\Variacio::findOne($variationId);
+
+if (!$variation && count($variations) > 0) {
+    $variation = $variations[0];
+}
+
+$photoUrl = $model->getThumbnail();
+if ($variation) {
+    $photoUrl = $variation->getThumbnail();
+}
 ?>
 
 <div id="product-page">
@@ -22,13 +35,13 @@ $moreProducts = \app\models\Termek::find()->where(['and', ['=', 'kategoria_id', 
                             <?=$percent?>%
                         </div>
                     <?php endif; ?>
-                    <a href="<?=$model->getThumbnail()?>" data-fancybox>
-                        <img src="<?=$model->getThumbnail()?>" alt="Dragcards" />
+                    <a href="<?=$photoUrl?>" data-fancybox>
+                        <img src="<?=$photoUrl?>" alt="Dragcards" />
                     </a>
                 </div>
                 <div class="small-photos">
                     <div class="photo selected">
-                        <img src="<?=$model->getThumbnail()?>" alt="Dragcards" />
+                        <img src="<?=$photoUrl?>" alt="Dragcards" />
                     </div>
                     <!--
                     <div class="photo">
@@ -47,21 +60,29 @@ $moreProducts = \app\models\Termek::find()->where(['and', ['=', 'kategoria_id', 
                     <span class="separator">/</span>
                     <a href="<?=$category->url?>" class="item"><?=$category->nev?></a>
                 </div>
-                <h1 class="product-name"><?=$model->nev?></h1>
-                <div class="price-row">
-                    <span class="current-price"><?=$ar?></span>
-                    <?php if ($regi_ar): ?>
-                        <span class="old-price"><?=$regi_ar?></span>
+                <h1 class="product-name">
+                    <?=$model->nev?>
+                    <?php if ($variation): ?>
+                        - <?=$variation->optionsArray()[0]->ertek?>
                     <?php endif; ?>
+                </h1>
+                <div class="price-row">
+                    <span class="current-price">
+                        <?php if ($variation): ?>
+                            <?=\app\components\Helpers::formatMoney($variation->currentPrice())?>
+                        <?php else: ?>
+                            <?=\app\components\Helpers::formatMoney($model->currentPrice())?>
+                        <?php endif; ?>
+                    </span>
                 </div>
                 <div class="short-description-row">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </div>
                 <div class="variations">
-                    <?php foreach ($variations as $variation): ?>
-                        <a href="/product.php?id=<?=$variation['id']?>" class="variation <?=$variation['id']==$product['id']?'active':''?>">
-                            <?=$variation['variation']?>
-                        </a>
+                    <?php foreach ($variations as $var): ?>
+                    <a href="<?=$model->url?>?variation=<?=$var->id?>" class="variation <?=$var->id == $variation->id ? 'active': ''?>">
+                        <?=$var->optionsArray()[0]->ertek?> változat
+                    </a>
                     <?php endforeach; ?>
                 </div>
                 <div class="amount-and-cart">
@@ -75,7 +96,7 @@ $moreProducts = \app\models\Termek::find()->where(['and', ['=', 'kategoria_id', 
                         </div>
                     </div>
                     <div class="add-to-cart">
-                        <div class="btn" data-edit-product data-product-id="<?=$id?>">Kosárba rakom</div>
+                        <div class="btn" data-add-to-cart data-product-id="<?=$model->id?>" data-variation-id="<?=$variation?$variation->id:''?>">Kosárba rakom</div>
                     </div>
                 </div>
                 <div class="extra-boxes">

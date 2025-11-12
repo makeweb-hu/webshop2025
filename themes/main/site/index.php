@@ -33,7 +33,7 @@ $products = \app\models\Termek::find()->orderBy('RAND() ASC')->limit(10)->all();
                     Végtelen lehetőség.
                 </div>
                 <div class="right">
-                    <a href="/kartyak">Megvásárolom</a>
+                    <a href="/termekek">Megvásárolom</a>
                 </div>
             </div>
         </div>

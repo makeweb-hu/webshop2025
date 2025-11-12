@@ -261,7 +261,7 @@ class ApiController extends \yii\web\Controller
         }
 
         return [
-            'html' => Yii::$app->controller->renderPartial('@app/themes/main/site/_cart'),
+            'html' => Yii::$app->controller->renderPartial('@app/themes/main/site/_cart_content'),
             'nr_of_items' => Kosar::nr(),
             'total' => \app\components\Helpers::formatMoney(Kosar::current()->getItemsTotal()),
         ];
@@ -305,6 +305,25 @@ class ApiController extends \yii\web\Controller
         ];
     }
 
+    public function actionChangeCartAmount() {
+        $id = trim(Yii::$app->request->post('id', ''));
+        $amount = intval(Yii::$app->request->post('amount', '1'));
+
+        $cart = Kosar::current(true);
+
+        $item = KosarTetel::findOne($id);
+        $item->mennyiseg = $amount;
+        $item->save(false);
+
+        return [
+            'html' => Yii::$app->controller->renderPartial('@app/themes/main/site/_cart_content', [
+                'customer_cart' => $cart,
+            ]),
+            'nr_of_items' => count($cart->items),
+            'total' => \app\components\Helpers::formatMoney($cart->getItemsTotal()),
+        ];
+    }
+
     public function actionAddToCart() {
         $id = trim(Yii::$app->request->post('id', ''));
         $variation_id = trim(Yii::$app->request->post('variation_id', ''));
@@ -343,9 +362,11 @@ class ApiController extends \yii\web\Controller
         }
 
         return [
-            'html' => Yii::$app->controller->renderPartial('@app/themes/main/site/_cart'),
-            'nr_of_items' => Kosar::nr(),
-            'total' => \app\components\Helpers::formatMoney(Kosar::current()->getItemsTotal()),
+            'html' => Yii::$app->controller->renderPartial('@app/themes/main/site/_cart_content', [
+                'customer_cart' => $cart,
+            ]),
+            'nr_of_items' => count($cart->items),
+            'total' => \app\components\Helpers::formatMoney($cart->getItemsTotal()),
         ];
     }
 
@@ -902,34 +923,6 @@ class ApiController extends \yii\web\Controller
         return [
             'success_title' => 'Küldtünk egy e-mailt',
             'success_message' => 'Elküldtük e-mailben a további instrukciókat a megadott címre, amennyiben tartozott hozzá felhasználói fiók!',
-        ];
-    }
-
-    public function actionSetAmount() {
-        $sessionId = trim(Yii::$app->request->post('sessionId', ''));
-        $item_id = trim(Yii::$app->request->post('item_id', ''));
-        $amount = min(99, max(1, intval(Yii::$app->request->post('amount', '1'))));
-
-        $session = Kosar::findOne(['token' => $sessionId]);
-        if (!$session) {
-            return [
-                'errors' => 'A session nem létezik vagy nincs megadva.',
-            ];
-        }
-
-        $cartItems = $session->items;
-        foreach ($cartItems as $cartItem) {
-            if ($cartItem->id == $item_id) {
-                $cartItem->mennyiseg = $amount;
-                $cartItem->save(false);
-                break;
-            }
-        }
-
-        $session->refresh();
-
-        return [
-            'session' => $session->toApi(),
         ];
     }
 

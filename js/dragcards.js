@@ -53,6 +53,178 @@ LIVE_HTML.add('[data-show-cart]', function () {
     });
 });
 
+(function () {
+    function getOptionsString($product) {
+        var ids = [];
+        $('#product-page .photo-and-details > .details .property .value').each(function () {
+            if ($(this).find('.variation')[0]) {
+                ids.push( Number($(this).find('.variation.active').data('option-id')) );
+            }
+        });
+        ids = ids.sort(function (a, b) {
+            return a - b;
+        });
+        return ids.join('-');
+    }
+
+    $('[data-like-product]').click(function () {
+        var variations = $(this).closest('#product-page').data('variations');
+        var variation = variations[getOptionsString($(this).closest('#product-page'))];
+
+        if (!variation) {
+            // alert('A termékváltozat nem található!');
+            // return;
+        }
+
+        $.post("/api/like", {
+            id: $(this).data("product-id"),
+            variation_id: variation,
+        }).then(function (response) {
+            $('[data-likes]').addClass('shown');
+            $('[data-likes-html]').html(response.html);
+            $('[data-nr-of-likes]').html(response.nr_of_items);
+        });
+    });
+
+    $('[data-like-product-thumbnail]').click(function () {
+        var id = $(this).data("product-id");
+        var variations = $(this).closest('.product').data('variations');
+        var variation = '';
+
+
+        if (Object.keys(variations).length === 0) {
+
+        } else if (Object.keys(variations).length === 1) {
+            variation = Object.values(variations)[0];
+        } else {
+            window.location.href = $(this).closest('.product').data('url');
+            return;
+        }
+
+        $.post("/api/like", {
+            id: id,
+            variation_id: variation,
+        }).then(function (response) {
+            $('[data-likes]').addClass('shown');
+            $('[data-likes-html]').html(response.html);
+            $('[data-nr-of-likes]').html(response.nr_of_items);
+        });
+    });
+
+    $('[data-add-to-cart-thumbnail]').click(function () {
+        var nr = 1;
+        var variations = $(this).closest('.product').data('variations');
+        var id = $(this).data("product-id");
+        var stock = Number($(this).closest('.product').data('stock'));
+        var variation = '';
+
+        if (!stock) {
+            alert('A termék jelenleg nincs készleten. Kérjük, érdeklődjön ügyfélszolgálatunkon a termékkel kapcsolatban!');
+            return;
+        }
+
+        if (Object.keys(variations).length === 0) {
+
+        } else if (Object.keys(variations).length === 1) {
+            variation = Object.values(variations)[0];
+        } else {
+            window.location.href = $(this).closest('.product').data('url');
+            return;
+        }
+
+        $.post("/api/add-to-cart", {
+            id: id,
+            variation_id: variation,
+            amount: nr,
+        }).then(function (response) {
+            $('#cart-sidebar').addClass('shown');
+            $('[data-cart-html]').html(response.html);
+            $('[data-nr-of-cart-items]').html(response.nr_of_items);
+            $('[data-cart-total]').html(response.total);
+            $('[data-goto-checkout]').css(response.nr_of_items == 0 ? {
+                'pointer-events': 'none',
+                'opacity': '0.4',
+            } : {
+                'opacity': '1',
+                'pointer-events': 'all',
+            });
+        });
+    });
+
+    $('[data-add-to-cart]').click(function () {
+        var nr = Number($('#product-page div.container div.product-main-section div.right div.amount-and-cart div.amount div.nr').html().replace(/[^0-9]+/g, ''));
+
+        var $this = $(this);
+        var stock = Number($(this).closest('#product-page').data('stock'));
+
+        $(this).html('<i class="fa-solid fa-circle-notch fa-spin"></i>');
+
+        $.post("/api/add-to-cart", {
+            id: $(this).data("product-id"),
+            variation_id: $(this).data("variation-id"),
+            amount: nr,
+        }).then(function (response) {
+            $this.html('Kosárba rakom');
+            $('#product-page div.container div.product-main-section div.right div.amount-and-cart div.amount div.nr').html(1);
+            $('#cart-sidebar').addClass('shown');
+            $('[data-cart-html]').html(response.html);
+            LIVE_HTML.update($('[data-cart-html]'));
+            $('[data-nr-of-cart-items]').html(response.nr_of_items);
+            $('[data-cart-total]').html(response.total);
+            $('[data-goto-checkout] > a').css(response.nr_of_items == 0 ? {
+                'pointer-events': 'none',
+                'opacity': '0.4',
+            } : {
+                'opacity': '1',
+                'pointer-events': 'all',
+            });
+        });
+    });
+}());
+
+LIVE_HTML.add('[data-delete-cart-item]', function () {
+    $(this).click(function () {
+        if (confirm('Biztos törli az elemet a kosárból?')) {
+            $.post("/api/remove-from-cart", {
+                id: $(this).closest('[data-cart-item]').data("item-id"),
+            }).then(function (response) {
+                $('[data-cart-html]').html(response.html);
+                LIVE_HTML.update($('[data-cart-html]'));
+                $('[data-nr-of-cart-items]').html(response.nr_of_items);
+                $('[data-cart-total]').html(response.total);
+                $('[data-goto-checkout] > a').css(response.nr_of_items == 0 ? {
+                    'pointer-events': 'none',
+                    'opacity': '0.4',
+                } : {
+                    'opacity': '1',
+                    'pointer-events': 'all',
+                });
+            });
+        }
+    })
+});
+
+LIVE_HTML.add('[data-delete-cart-item]', function () {
+    $(this).click(function () {
+
+        $.post("/api/change-cart-amount", {
+            id: $(this).closest('[data-cart-item]').data("item-id"),
+        }).then(function (response) {
+            $('[data-cart-html]').html(response.html);
+            LIVE_HTML.update($('[data-cart-html]'));
+            $('[data-nr-of-cart-items]').html(response.nr_of_items);
+            $('[data-cart-total]').html(response.total);
+            $('[data-goto-checkout] > a').css(response.nr_of_items == 0 ? {
+                'pointer-events': 'none',
+                'opacity': '0.4',
+            } : {
+                'opacity': '1',
+                'pointer-events': 'all',
+            });
+        });
+    })
+});
+
 function formatMoney(amount) {
     return ((amount
         .toString()

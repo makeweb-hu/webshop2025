@@ -11,7 +11,7 @@ use Yii;
 use ZendSearch\Lucene\Index\Term;
 
 class MetaRenderer {
-    const DEFAULT_TITLE = 'DragCards';
+    const DEFAULT_TITLE = 'Dragcards';
 
     const DEFAULT_DESCRIPTION = 'Okoskártyák különféle felhasználáshoz';
 
