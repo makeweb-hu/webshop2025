@@ -105,8 +105,8 @@ class MetaRenderer {
 
                 return $this->renderMetaByData([
                     'title' => $blogPost->cim . ' ' . self::DEFAULT_TITLE,
-                    'description' => $blogPost->lead,
-                    'image' => $blogPost->photo ? '/' . $category->photo->getFilePath() : '/img/meta.png',
+                    'description' => $blogPost->bevezeto,
+                    'image' => $blogPost->photo ? '/' . $blogPost->photo->getFilePath() : '/img/meta.png',
                 ]);
 
             case 'site/category':

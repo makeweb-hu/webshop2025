@@ -1,189 +1,205 @@
 <?php
-$sort = trim(Yii::$app->request->get('sort', 'newest'));
-$page = intval(Yii::$app->request->get('page', '0'));
-$minPrice = Yii::$app->request->get('min_price', '');
-$maxPrice = Yii::$app->request->get('max_price', '');
-$cat = explode(',', Yii::$app->request->get('cat', ''));
-$discounted = Yii::$app->request->get('discounted', '');
-$new = Yii::$app->request->get('new', '');
+$category = $model;
 
-if (count($cat) === 1 && !trim($cat[0])) {
-    $cat = [];
+if ($category) {
+    $products = \app\models\Termek::find()->where(['kategoria_id' => $category->id])->orderBy('id ASC')->all();
+} else {
+    $products = \app\models\Termek::find()->orderBy('id ASC')->all();
 }
 
-$hasFilterClear = $minPrice || $maxPrice || count($cat) > 0 || $discounted || $new;
+$baseUrl = $category ? $category->url : '/termekek';
 
-$subcats = ($model ? $model->children : \app\models\Kategoria::mainCats());
-$breadcrumbs = $model ? $model->getBreadcrumbs() : [];
-
-$filterResult = \app\models\Termek::filterProducts($model ? $model->id : null, $page, $minPrice, $maxPrice, $discounted, $new, $cat, $sort);
-
-$products = $filterResult['query']->all();
-
-$baseUrl = $model?$model->getUrl():'/termekek';
-
+$sort = Yii::$app->request->get('sort', 'ar_asc');
+$sorts = [
+    'ar_desc' => 'Olcsóbb elöl',
+    'ar_asc' => 'Drágább elöl',
+    'nev_asc' => 'Ábécé növekvő',
+    'nev_desc' => 'Ábécé csökkenő',
+];
+$sortName = $sorts[$sort] ?? 'Olcsóbb elöl';
 ?>
-<div class="breadcrumbs">
+
+<div class="products-page">
     <div class="container">
-        <div class="items">
-            <a href="/">
-                <img src="/img/home.svg" />
-            </a>
-            <img src="/img/breadcrumb-arrow.svg" class="arrow" />
-            <a href="/termekek">Termékek</a>
-
-            <?php foreach ($breadcrumbs as $breadcrumb): ?>
-
-            <img src="/img/breadcrumb-arrow.svg" class="arrow" />
-            <a href="<?=$breadcrumb->getUrl()?>"><?=$breadcrumb->nev?></a>
-
-            <?php endforeach; ?>
-
-            <?php if ($model): ?>
-            <img src="/img/breadcrumb-arrow.svg" class="arrow" />
-            <span class="active"><?=$model->nev?></span>
-            <?php endif; ?>
-        </div>
-
-    </div>
-</div>
-
-<div id="product-list" data-base-url="<?=$baseUrl?>" data-page="<?=$page?>" data-sort="<?=$sort?>">
-    <div class="container">
-
-        <div class="filters-and-products">
+        <h1 class="page-title">
+            <?=$category ? $category->nev : 'Összes termék'?>
+        </h1>
+        <div class="filters-row">
             <div class="left">
-                <div class="filters">
-                    <div class="clear-filters">
-
-                        <span data-filter-clear style="<?=$hasFilterClear?'':'visibility:hidden'?>">
-                            <img src="/img/delete.svg" />
-                            Szűrés törlése
-                         </span>
+                <div class="filters-dropdown" data-show-filters="">
+                    <div class="icon">
+                        <img src="/img/dragcards/product-list/filters.svg" alt="Dragcards">
+                    </div>
+                    <div class="text">
+                        Szűrők <span class="hide-on-mobile">megjelenítése</span>
+                    </div>
+                    <div class="arrow">
 
                     </div>
-                    <div class="section-title">
-                        Ár
-                    </div>
-                    <div class="min-max">
-                        <div class="min">
-                            <input type="text" placeholder="Min. (Ft)" data-filter-min-price value="<?=$minPrice?>">
+
+                    <div class="dropdown-content">
+                        <!--
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-title">Telefon</div>
+                            <div class="dropdown-row">
+                                <div class="value">
+                                    <div class="logo"><img src="/img/apple-black.svg" alt="Dragcards" /></div>
+                                    <div class="text">
+                                        Apple iPhone 15 PRO
+                                    </div>
+                                </div>
+                                <div class="dropdown-arrow">
+                                    <img src="/img/chevron-down.svg" alt="Dragcards" />
+                                </div>
+                            </div>
                         </div>
-                        <div class="max">
-                            <input type="text" placeholder="Max. (Ft)" data-filter-max-price value="<?=$maxPrice?>">
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-title">Tok színe</div>
+                            <div class="checkbox-row">
+                                <div class="checkbox checked">
+                                    <img src="/img/checkmark-white.svg" alt="Dragcards" />
+                                </div>
+                                <div class="value">
+                                    Átlátszó
+                                </div>
+                            </div>
+                            <div class="checkbox-row">
+                                <div class="checkbox">
+                                    <img src="/img/checkmark-white.svg" alt="Dragcards" />
+                                </div>
+                                <div class="value">
+                                    Fehér
+                                </div>
+                            </div>
+                            <div class="checkbox-row">
+                                <div class="checkbox">
+                                    <img src="/img/checkmark-white.svg" alt="Dragcards" />
+                                </div>
+                                <div class="value">
+                                    Fekete
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="section-title">
-                        Tulajdonság
-                    </div>
-                    <div class="items">
-                        <label class="filter">
-                            <input type="checkbox" data-filter-discount <?=$discounted ? 'checked' : ''?> > Akciós
-                        </label>
-                        <label class="filter">
-                            <input type="checkbox" data-filter-new <?=$new ? 'checked' : ''?> > Újdonság
-                        </label>
-                    </div>
-                    <?php if (count($subcats) > 0): ?>
-                    <div class="section-title">
-                        Kategória
-                    </div>
-                    <div class="items">
-                        <?php foreach ($subcats as $subcat): ?>
-                        <label class="filter">
-                            <input type="checkbox" data-filter-category="<?=$subcat->id?>" <?=in_array($subcat->id, $cat)?'checked':''?> > <?=$subcat->nev?>
-                        </label>
-
-                        <?php foreach ($subcat->children as $subcatChild): ?>
-
-                        <label class="filter subcat">
-                            <input type="checkbox" data-filter-category="<?=$subcatChild->id?>" <?=in_array($subcatChild->id, $cat)?'checked':''?> > <?=$subcatChild->nev?>
-                        </label>
-
-                        <?php endforeach; ?>
-
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
-                    <div class="button-row">
-                        <a href="javascript:void(0)" data-filter-button><button>Szűrés</button></a>
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-title">MagSafe</div>
+                            <div class="checkbox-row">
+                                <div class="checkbox">
+                                    <img src="/img/checkmark-white.svg" alt="Dragcards" />
+                                </div>
+                                <div class="value">
+                                    Igen
+                                </div>
+                            </div>
+                            <div class="checkbox-row">
+                                <div class="checkbox">
+                                    <img src="/img/checkmark-white.svg" alt="Dragcards" />
+                                </div>
+                                <div class="value">
+                                    Nem
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-row">
+                            <div class="btn">
+                                Szűrés
+                            </div>
+                        </div>
+                        <div class="delete-filters-row">
+                            <div class="btn">
+                                <div class="icon"><img src="/img/x-red.svg" alt="Dragcards" /></div>
+                                <div class="text">Szűrők törlése</div>
+                            </div>
+                        </div>
+                        -->
+                        <div style="margin-bottom: 15px; text-align: center">
+                            <!--
+                            <i class="fa-solid fa-circle-notch fa-spin"></i> Szűrők betöltése...
+                            -->
+                            Nincsenek elérhető szűrők
+                        </div>
+                        <div class="button-row">
+                            <div class="btn">
+                                Szűrés
+                            </div>
+                        </div>
+                        <!--
+                        <div class="delete-filters-row">
+                            <div class="btn">
+                                <div class="icon"><img src="/img/x-red.svg" alt="Dragcards" /></div>
+                                <div class="text">Szűrők törlése</div>
+                            </div>
+                        </div>
+                        -->
                     </div>
                 </div>
             </div>
             <div class="right">
-
-                <?php if (count($subcats) > 0): ?>
-
-                    <div class="categories">
-                        <?php foreach ($subcats as $childCat): ?>
-                        <a class="category" href="<?=$childCat->getUrl()?>">
-                            <div class="photo">
-                                <div class="photo-container">
-                                    <img src="<?=$childCat->getThumbnail()?>" />
-                                </div>
-                            </div>
-                            <div class="name">
-                                <?=$childCat->nev?>
-                            </div>
-                        </a>
-                        <?php endforeach; ?>
-
+                <span>Sorrend:</span>
+                <div class="sort-dropdown" data-sort-dropdown="">
+                    <div class="value"><?=$sortName?></div>
+                    <div class="arrow">
+                        <img src="/img/dragcards/product-list/chevron-down.svg" alt="Dragcards">
                     </div>
-                <?php endif;?>
 
-
-                <div class="title-row">
-                    <h1><?=$model->nev ?: ($discounted ? 'Akciós termékek' : ($new ? 'Újdonságok' : 'Termékek'))?></h1>
-                    <div class="sort">
-                        <select data-sort-select>
-                            <option <?=$sort=='newest'?'selected':''?> value="newest">Újak elöl</option>
-                            <option <?=$sort=='oldest'?'selected':''?> value="oldest">Régiek elöl</option>
-                            <option <?=$sort=='lowest_price'?'selected':''?>  value="lowest_price">Ár szerint növekvő</option>
-                            <option <?=$sort=='highest_pric'?'selected':''?> value="highest_price">Ár szerint csökkenő</option>
-                        </select>
+                    <div class="dropdown-content">
+                        <div class="dropdown-item <?=$sort=='ar_asc'?'selected':''?>" data-change-sort="" data-value="ar_asc" data-base-url="<?=$baseUrl?>">
+                            <div class="text">Olcsóbb elöl</div>
+                            <div class="checkmark"><img src="/img/dragcards/product-list/checkmark.svg" alt="Dragcards"></div>
+                        </div>
+                        <div class="dropdown-item <?=$sort=='ar_desc'?'selected':''?>" data-change-sort="" data-value="ar_desc" data-base-url="<?=$baseUrl?>">
+                            <div class="text">Drágább elöl</div>
+                            <div class="checkmark"><img src="/img/dragcards/product-list/checkmark.svg" alt="Dragcards"></div>
+                        </div>
+                        <div class="dropdown-item <?=$sort=='nev_asc'?'selected':''?>" data-change-sort="" data-value="nev_asc" data-base-url="<?=$baseUrl?>">
+                            <div class="text">Ábécé növekvő</div>
+                            <div class="checkmark"><img src="/img/dragcards/product-list/checkmark.svg" alt="Dragcards"></div>
+                        </div>
+                        <div class="dropdown-item <?=$sort=='nev_desc'?'selected':''?>" data-change-sort="" data-value="nev_desc" data-base-url="<?=$baseUrl?>">
+                            <div class="text">Ábécé csökkenő</div>
+                            <div class="checkmark"><img src="/img/dragcards/product-list/checkmark.svg" alt="Dragcards"></div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="columns">
 
-                <div class="products">
+                <?php foreach ($products as $product): ?>
 
-                    <?php foreach ($products as $product): ?>
+                    <?=Yii::$app->controller->renderPartial('_product', [
+                        'model' => $product,
+                    ])?>
 
-                        <?=Yii::$app->controller->renderPartial('_product', [
-                                'model' => $product,
-                        ])?>
+                <?php endforeach; ?>
 
-                    <?php endforeach; ?>
+            </div>
 
-                    <?php if (count($products) == 0): ?>
-                    <div class="no-results" style="font-size: 150%; text-align: center; opacity: 0.4; width: 100%; padding: 80px;">
-                        <div class="flex justify-center mb-4"><img src="/img/borago.svg" /></div>
-                        Nincs találat
+            <?php if (!$products): ?>
+                <div style="font-size: 400%; text-align: center; padding: 50px 0; opacity: 0.3;">
+                    <div style="text-align: center;">
+                        <img src="/favicons/favicon.svg" style="width: 150px; filter:grayscale(1)" />
                     </div>
-                    <?php endif; ?>
-
+                    <div>
+                        Nincs találat.
+                    </div>
                 </div>
+            <?php endif; ?>
 
-                <?php if (count($products) > 0): ?>
-                <div class="pagination">
-
-                    <a class="item left" href="<?=$baseUrl?>?<?=http_build_query(array_merge($_GET, ['page' => max(0, $page - 1)]))?>">
-                        <img src="/img/paginate-left.svg" />
-                    </a>
-
-                    <?php for ($i = 0; $i < $filterResult['pages']; $i += 1): ?>
-                    <a class="item <?=$page==$i?'active':''?>" href="<?=$baseUrl?>?<?=http_build_query(array_merge($_GET, ['page' => $i]))?>" style="<?=abs($page-$i)>5?'display:none':''?>">
-                        <?=$i + 1?>
-                    </a>
-                    <?php endfor; ?>
-
-                    <a class="item right" href="<?=$baseUrl?>?<?=http_build_query(array_merge($_GET, ['page' => min($filterResult['pages'] - 1, $page + 1)]))?>">
-                        <img src="/img/paginate-right.svg" />
-                    </a>
-
-                </div>
-
-                <?php endif; ?>
-
+            <div class="pagination">
+                <a href="javascript:void(0)" class="prev">
+                    <span class="icon"><img src="/img/dragcards/pagination/arrow-left.svg" alt="Dragcards" /></span>
+                    <span class="text">Előző</span>
+                </a>
+                <a href="#" class="page active">1</a>
+                <!--
+                <a href="#" class="page ">2</a>
+                <a href="#" class="page ">3</a>
+                -->
+                <a href="javascript:void(0)" class="next">
+                    <span class="text">Következő</span>
+                    <span class="icon"><img src="/img/dragcards/pagination/arrow-right.svg" alt="Dragcards" /></span>
+                </a>
             </div>
         </div>
     </div>

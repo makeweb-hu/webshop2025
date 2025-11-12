@@ -56,6 +56,10 @@ class StatikusOldal extends \yii\db\ActiveRecord
         return Oldal::findOne($this->oldal_id);
     }
 
+    public function getUrl() {
+        return '/' . $this->page->url;
+    }
+
     public static function get($id) {
         return StatikusOldal::findOne($id);
     }

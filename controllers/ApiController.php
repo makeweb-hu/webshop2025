@@ -44,6 +44,7 @@ use app\models\Termek;
 use app\models\Tudastar;
 use app\models\UzenetCimzett;
 use app\models\Vasarlo;
+use app\models\VasarloMunkamenet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Yii;
@@ -58,7 +59,7 @@ use app\models\Session;
 use app\models\Texts;
 
 
-class űApiController extends \yii\web\Controller
+class ApiController extends \yii\web\Controller
 {
     const JOB_KEY = '6FSA67C3ICpUJBVm1NVb';
 
@@ -234,147 +235,6 @@ class űApiController extends \yii\web\Controller
         Push::sendToUser('M-439141', 'Ez egy teszt', 'Hello world');
     }
 
-    public function actionSignup() {
-        $sessionId = trim(Yii::$app->request->post('sessionId', ''));
-
-        $name = trim(Yii::$app->request->post('name', ''));
-        $email = trim(Yii::$app->request->post('email', ''));
-        $phone = trim(Yii::$app->request->post('phone', ''));
-        $sponsorMid = strtoupper(trim(Yii::$app->request->post('sponsorMid', '')));
-        // $password = Yii::$app->request->post('password', '');
-        // $passwordRepeat = Yii::$app->request->post('passwordRepeat', '');
-
-        $mailingAddress = json_decode( $_POST['mailingAddress'] ?? '{}', true);
-        $shippingAddress = json_decode( $_POST['shippingAddress'] ?? '{}', true);
-        $billingAddress = json_decode($_POST['billingAddress'] ?? '{}', true);
-
-        $differentBillingAddress = strval(Yii::$app->request->post('differentBillingAddress', '')) === '1';
-
-        $session = Kosar::find()->where(['token' => $sessionId])->one();
-        if (!$session) {
-            return [
-                'errors' => 'A session nem létezik vagy nincs megadva.',
-            ];
-        }
-
-        if (!$name) {
-            return [
-                'error' => 'Adja meg a nevét!',
-            ];
-        }
-        if (!$email) {
-            return [
-                'error' => 'Adja meg az e-mail címét!',
-            ];
-        } else if (!Helpers::isEmailValid($email)) {
-            return [
-                'error' => 'Helytelen az e-mail cím formátuma!',
-            ];
-        }
-        if (!$phone) {
-            return [
-                'error' => 'Adja meg a telefonszámát!',
-            ];
-        }
-        if (!$sponsorMid) {
-            return [
-                'error' => 'Adja meg szponzorának M-azonosítóját!',
-            ];
-        }
-        /*
-        if (!$password) {
-            return [
-                'error' => 'Adjon meg egy jelszót!',
-            ];
-        } else if (!$passwordRepeat) {
-            return [
-                'error' => 'Ismételje meg a jelszót!',
-            ];
-        } else if ($password !== $passwordRepeat) {
-            return [
-                'error' => 'A két jelszó nem egyezik!',
-            ];
-        }
-        */
-
-        if (!$mailingAddress['zip'] || !$mailingAddress['city'] || !$mailingAddress['street'] || !$mailingAddress['country_id']) {
-            return [
-                'error' => 'Töltse ki a levelezési címet!',
-            ];
-        }
-
-        if ($differentBillingAddress && (!$billingAddress['zip'] || !$billingAddress['city'] || !$billingAddress['street'] || !$billingAddress['country_id'])) {
-            return [
-                'error' => 'Töltse ki a számlázási címet!',
-            ];
-        }
-
-        /*
-        if (!$mailingAddress['zip'] || !$mailingAddress['city'] || !$mailingAddress['street'] || !$mailingAddress['country_id']) {
-            return [
-                'error' => 'Adjon meg egy levelezési címet!',
-            ];
-        }
-
-        if (!$billingAddress['zip'] || !$billingAddress['city'] || !$billingAddress['street'] || !$billingAddress['country_id']) {
-            return [
-                'error' => 'Adjon meg egy számlázási címet!',
-            ];
-        }
-
-        if (!$shippingAddress['zip'] || !$shippingAddress['city'] || !$shippingAddress['street'] || !$shippingAddress['country_id']) {
-            return [
-                'error' => 'Adjon meg egy szállítási címet!',
-            ];
-        }
-        */
-
-        // Flavon API call
-        try {
-            $response = FlavonApi::call('POST', 'user', [
-                'sponsorMid' => $sponsorMid,
-                'fullName' => $name,
-                'email' => [$email],
-                'phone' => [$phone],
-                // 'password' => $password,
-                'mailingAddress' => $mailingAddress,
-                'billingAddress' => $differentBillingAddress ? $billingAddress : $mailingAddress,
-                'shippingAddress' => $mailingAddress,
-                'newsletter' => 0,
-            ]);
-
-            if ($response && is_array($response) && ($response['mid'] ?? null) && ($response['token'] ?? null)) {
-                // Ez egy sikeres regisztrációnak néz ki formailag az API válasz alapján
-
-                // Bejelentkeztetés a session-be
-
-                $user = new FlavonFelhasznalo;
-                $user->id = intval($response['id']);
-                $user->mid = $response['mid'];
-                $user->frissitve = date('Y-m-d H:i:s');
-                $user->save(false);
-
-                $session->felhasznalo_id = $user->getPrimaryKey();
-                $session->bearer_token = $response['token'];
-                $session->save(false);
-
-            } else if ($response && is_array($response) && ($response['message'] ?? null)) {
-                return [
-                    'error' => $response['message']
-                ];
-            } else {
-                return [
-                    'error' => 'Technikai okok miatt nem sikerült a regisztráció. Vegye fel a kapcsolatot az ügyfélszolgálattal!',
-                ];
-            }
-        } catch (\Throwable $e) {
-
-        }
-
-        return [
-            'session' => $session->toApi(),
-        ];
-    }
 
     public function actionDeleteLike() {
         $id = trim(Yii::$app->request->post('id', ''));
@@ -728,82 +588,268 @@ class űApiController extends \yii\web\Controller
             'orderId' => is_array($orderResponse) && ($orderResponse['id'] ?? null) ? $orderResponse['id'] : '',
         ];
     }
-
     public function actionLogin() {
-        $mid = strtoupper(trim(Yii::$app->request->post('mid', '')));
-        $password = trim(Yii::$app->request->post('password', ''));
-        $sessionId = trim(Yii::$app->request->post('sessionId', ''));
+        $email = trim(Yii::$app->request->post('email', ''));
+        $password = Yii::$app->request->post('password', '');
 
-        $session = Kosar::find()->where(['token' => $sessionId])->one();
-        if (!$session) {
-            return [
-                'errors' => 'A session nem létezik vagy nincs megadva.',
-            ];
+        if (!$email) {
+            return ['error' => ['email' => 'Kötelező mező!']];
+        } else if (!Helpers::isEmailValid($email)) {
+            return ['error' => ['email' => 'Hibás e-mail cím!']];
         }
 
-        $errors = [];
-        if (!$mid) {
-            $errors['mid'] = 'Kötelező mező.';
-        }
         if (!$password) {
-            $errors['password'] = 'Kötelező mező.';
+            return ['error' => ['password' => 'Kötelező mező!']];
         }
 
-        if (count($errors) > 0) {
-            return [
-                'errors' => $errors,
-            ];
+        $customer = Vasarlo::findOne(['email' => $email]);
+        if (!$customer) {
+            return ['error' => ['password' => 'Hibás e-mail cím vagy jelszó!']];
+        } else {
+            if (!password_verify($password, $customer->jelszo_hash) && md5($password) !== $customer->jelszo_hash) {
+                return ['error' => ['password' => 'Hibás e-mail cím vagy jelszó!']];
+            }
+            $customer->login();
         }
-
-        // API CALL
-        $response = FlavonApi::post('user/auth', [
-            'mid' => $mid,
-            'password' => $password,
-        ]);
-
-        if (!$response || !($response['ID_UGYFEL'] ?? null)) {
-            return [
-                'errors' => 'Hibás felhasználónév vagy jelszó!',
-            ];
-        }
-
-        $user = FlavonFelhasznalo::findOne(intval($response['ID_UGYFEL']));
-        if (!$user) {
-            $user = new FlavonFelhasznalo;
-            $user->id = intval($response['ID_UGYFEL']);
-            $user->mid = $mid;
-            $user->frissitve = date('Y-m-d H:i:s');
-            $user->save(false);
-        }
-
-        // Login (into the session)
-        $session->felhasznalo_id = $user->id;
-        $session->bearer_token = $response['token'];
-        $session->save(false);
 
         return [
-            'session' => $session->toApi(),
+            'redirect_url' => '(current)',
         ];
     }
 
     public function actionLogout() {
-        $sessionId = trim(Yii::$app->request->post('sessionId'));
+        $session = VasarloMunkamenet::current();
 
-        $session = Kosar::find()->where(['token' => $sessionId])->one();
-        if (!$session) {
-            return [
-                'errors' => 'A session nem létezik vagy nincs megadva.',
-            ];
+        if ($session) {
+            $session->delete();
         }
-
-        // Logout (from the session)
-        $session->felhasznalo_id = NULL;
-        $session->save(false);
+        Yii::$app->response->cookies->remove("customer"); // cookie törlése
 
         return [
-            'session' => $session->toApi(),
+            'redirect_url' => '(current)',
         ];
     }
+
+
+    public function actionSignup() {
+        $name = trim(Yii::$app->request->post('name', ''));
+        $email = trim(Yii::$app->request->post('email', ''));
+        $phone = str_replace(' ', '', trim(Yii::$app->request->post('phone', '')));
+        $agree1 = trim(Yii::$app->request->post('agree1', '')) == 'true';
+        $agree2 = trim(Yii::$app->request->post('agree2', '')) == 'true';
+
+        $errors = [];
+
+        if (!$name) {
+            $errors['name'] = 'Adja meg a nevét!';
+        }
+        if (!$email) {
+            $errors['email'] = 'Adja meg e-mail címét!';
+        } else if (!Helpers::isEmailValid($email)) {
+            $errors['email'] = 'Helytelen formátum!';
+        }
+
+        if ($phone && !Helpers::isPhoneValid($phone)) {
+            $errors['phone'] = '+36... formátumban kell megadni a telefonszámot!';
+        }
+
+        if (!$agree1) {
+            $errors['agree1'] = 'Kötelező elfogadnia!';
+        }
+        if (!$agree2) {
+            $errors['agree2'] = 'Kötelező elfogadnia!';
+        }
+        if (count($errors) > 0) {
+            return ['error' => $errors];
+        }
+
+        $customer = Vasarlo::findOne(['email' => $email]);
+        if (!$customer) {
+            $shippingAddress = new Cim;
+            $shippingAddress->nev = '';
+            $shippingAddress->iranyitoszam = '';
+            $shippingAddress->orszag_id = 1;
+            $shippingAddress->telepules = '';
+            $shippingAddress->utca = '';
+            //$shippingAddress->epulet = '';
+            $shippingAddress->save(false);
+
+            $billingAdddress = new Cim;
+            $billingAdddress->nev = '';
+            $billingAdddress->iranyitoszam = '';
+            $billingAdddress->orszag_id = 1;
+            $billingAdddress->telepules = '';
+            $billingAdddress->utca = '';
+            //$billingAdddress->epulet = '';
+            $billingAdddress->adoszam = '';
+            $billingAdddress->save(false);
+
+            $customer = new Vasarlo;
+            $customer->nev = $name;
+            $customer->email = $email;
+            $customer->telefonszam = $phone;
+            $customer->jelszo_hash = null;
+            $customer->letrehozas_idopontja = date('Y-m-d H:i:s');
+            $customer->szamlazasi_cim_id = $billingAdddress->getPrimaryKey();
+            $customer->szallitasi_cim_id = $shippingAddress->getPrimaryKey();
+            $customer->save(false);
+        }
+
+        $customer->jelszo_beallito_token = Helpers::random_bytes();
+        $customer->jelszo_beallito_token_idopont = date('Y-m-d H:i:s');
+        $customer->save(false);
+
+        // Email küldése
+        EmailSablon::findOne(9)->send(null, $email, [
+            'nev' => $name,
+            'link' => Helpers::rootUrl() . '/?password_reset_token=' . $customer->jelszo_beallito_token,
+        ]);
+
+        return [
+            'success_title' => 'Küldtünk egy e-mailt',
+            'success_message' => 'Elküldtük a további instrukciókat a megadott e-mail címre!',
+        ];
+    }
+
+    public function actionSetPassword() {
+        $password_reset_token = Yii::$app->request->post('password_reset_token', '');
+        $password = Yii::$app->request->post('password', '');
+        $password_repeat = Yii::$app->request->post('password_repeat', '');
+
+        $customer = Vasarlo::findOne(['jelszo_beallito_token' => $password_reset_token]);
+        if (!$customer) {
+            return ['error' => ['password' => 'Lejárt a link érvényességi ideje!']];
+        }
+        if ((time() - strtotime($customer->jelszo_beallito_token_idopont)) > 60*11) {
+            return ['error' => ['password' => 'Lejárt a link érvényességi ideje!']];
+        }
+        if (!$password) {
+            return ['error' => ['password' => 'Kötelező mező!']];
+        }
+        if (strlen($password) < 6) {
+            return ['error' => ['password' => 'Legalább 6 karakternek kell lennie!']];
+        }
+        if (!$password_repeat) {
+            return ['error' => ['password_repeat' => 'Kötelező mező!']];
+        }
+        if ($password !== $password_repeat) {
+            return ['error' => ['password' => 'Nem egyeznek a jelszavak!', 'password_repeat' => 'Nem egyeznek a jelszavak!']];
+        }
+
+        $customer->jelszo_hash = password_hash($password, PASSWORD_DEFAULT);
+        $customer->jelszo_beallito_token = Helpers::random_bytes();
+        $customer->save(false);
+
+        $customer->login();
+
+        return [
+            'redirect_url' => '/',
+        ];
+    }
+
+
+    public function actionEditProfile() {
+        $name = trim(Yii::$app->request->post('name', ''));
+        $email = trim(Yii::$app->request->post('email', ''));
+        $phone = trim(str_replace(' ', '', Yii::$app->request->post('phone', '')));
+
+        $customer = Vasarlo::current();
+        if (!$customer) {
+            return [];
+        }
+
+        if (!$name) {
+            return ['error' =>['name' => 'Kötelező mező!']];
+        }
+        if (!$email) {
+            return ['error' =>['email' => 'Kötelező mező!']];
+        } else if (!Helpers::isEmailValid($email)) {
+            return ['error' =>['email' => 'Hibás e-mail cím!']];
+        }
+        if (!$phone) {
+            return ['error' =>['phone' => 'Kötelező mező!']];
+        } else if (!Helpers::isPhoneValid($phone)) {
+            return ['error' =>['phone' => 'Hibás telefonszám! +36... formátumban add meg!']];
+        }
+
+        $customer->nev = $name;
+        $customer->email = $email;
+        $customer->telefonszam = $phone;
+        $customer->save(false);
+
+        return [
+            'success_message' => 'Sikeresen módosítottad a személyes adataidat!',
+        ];
+    }
+
+    public function actionEditPassword() {
+        $old_password = Yii::$app->request->post('old_password', '');
+        $password = Yii::$app->request->post('password', '');
+        $password_repeat = Yii::$app->request->post('password_repeat', '');
+
+        $customer = Vasarlo::current();
+        if (!$customer) {
+            return [];
+        }
+
+        if (!password_verify($old_password, $customer->jelszo_hash) && md5($old_password) !== $customer->jelszo_hash) {
+            return [
+                'error' => ['old_password' => 'Hibás jelszó!'],
+            ];
+        }
+        if (!$password) {
+            return ['error' => ['password' => 'Kötelező mező!']];
+        }
+        if (strlen($password) < 6) {
+            return ['error' => ['password' => 'Legalább 6 karakternek kell lennie!']];
+        }
+        if (!$password_repeat) {
+            return ['error' => ['password_repeat' => 'Kötelező mező!']];
+        }
+        if ($password !== $password_repeat) {
+            return ['error' => ['password' => 'Nem egyeznek a jelszavak!', 'password_repeat' => 'Nem egyeznek a jelszavak!']];
+        }
+
+        $customer->jelszo_hash = password_hash($password, PASSWORD_DEFAULT);
+        $customer->jelszo_beallito_token = Helpers::random_bytes();
+        $customer->save(false);
+
+        return [
+            'success_message' => 'Sikeresen módosítottad a jelszavad.',
+        ];
+    }
+
+    public function actionSetFirstPassword() {
+        $password = Yii::$app->request->post('password', '');
+        $password_repeat = Yii::$app->request->post('password_repeat', '');
+
+        $customer = Vasarlo::current();
+        if (!$customer) {
+            return [];
+        }
+
+        if (!$password) {
+            return ['error' => ['password' => 'Kötelező mező!']];
+        }
+        if (strlen($password) < 6) {
+            return ['error' => ['password' => 'Legalább 6 karakternek kell lennie!']];
+        }
+        if (!$password_repeat) {
+            return ['error' => ['password_repeat' => 'Kötelező mező!']];
+        }
+        if ($password !== $password_repeat) {
+            return ['error' => ['password' => 'Nem egyeznek a jelszavak!', 'password_repeat' => 'Nem egyeznek a jelszavak!']];
+        }
+
+        $customer->jelszo_hash = password_hash($password, PASSWORD_DEFAULT);
+        $customer->jelszo_beallito_token = Helpers::random_bytes();
+        $customer->save(false);
+
+        return [
+            'redirect_url' => '(current)',
+        ];
+    }
+
 
     public function actionIsPaid($orderNumber) {
         $orderRecord = Rendeles::findOne([
@@ -824,100 +870,40 @@ class űApiController extends \yii\web\Controller
         ];
     }
 
-    public function actionPay() {
-        $sessionId = trim(Yii::$app->request->post('sessionId'));
-        $orderNumber = trim(Yii::$app->request->post('orderNumber'));
-        $redirect = trim(Yii::$app->request->post('redirect'));
-
-        $session = Kosar::find()->where(['token' => $sessionId])->one();
-        if (!$session) {
-            return [
-                'errors' => 'A session nem létezik vagy nincs megadva.',
-            ];
-        }
-
-        $orderRecord = Rendeles::findOne([
-            'bizonylatszam' => $orderNumber,
-        ]);
-
-        if (!$orderRecord) {
-            return [
-                'errors' => 'A rendelés nem létezik.',
-            ];
-        }
-
-        if ($orderRecord->fizetesi_mod !== 'stripe') {
-            return [
-                'errors' => 'A rendelés fizetési módja NEM Stripe.',
-            ];
-        }
-
-        if ($orderRecord->fizetve) {
-            return [
-                'errors' => 'A rendelés már ki lett fizetve.',
-            ];
-        }
-
-        if (!$session->user || $session->user->id != $orderRecord->felhasznalo_id) {
-            return [
-                'errors' => 'A rendelés nem a felhasználóhoz tartozik.',
-            ];
-        }
-
-        $user = FlavonApi::get('user/' . $session->user->id, null, $session->bearer_token);
-
-        $stripeResponse = Stripe::createPayment(
-            StripeKulcs::demoSecretKey(StripeKulcs::getIdFromCountryAndCurrency( $orderRecord->orszag, $orderRecord->penznem )),
-            $orderRecord->penznem,
-            $orderRecord->osszeg,
-            $orderRecord->bizonylatszam,
-            $user['email'][0],
-            'https://flavon-admin.makeweb.hu/site/stripe-success?id=' . $orderRecord->id . '&redirect=' . urlencode($redirect),
-            'https://flavon-admin.makeweb.hu/site/stripe-failure?id=' . $orderRecord->id . '&redirect=' . urlencode($redirect)
-        );
-
-        $orderRecord->stripe_id = $stripeResponse['id'];
-        $orderRecord->save(false);
-
-        return [
-            'url' => $stripeResponse['url'],
-        ];
-    }
-
     public function actionForm($id) {
         $model = Kerdoiv::findOne($id);
         return $model->toApi();
     }
 
+
     public function actionForgotPassword() {
-        $sessionId = trim(Yii::$app->request->post('sessionId'));
-        $mid = strtoupper(trim(Yii::$app->request->post('mid', '')));
+        $email = trim(Yii::$app->request->post('email', ''));
 
-        $session = Kosar::find()->where(['token' => $sessionId])->one();
-        if (!$session) {
-            return [
-                'errors' => 'A session nem létezik vagy nincs megadva.',
-            ];
+        if (!$email) {
+            return ['error' => ['email' => 'Kötelező mező!']];
+        }
+        if (!Helpers::isEmailValid($email)) {
+            return ['error' => ['email' => 'Helytelen az email formátuma!']];
         }
 
-        if (!preg_match("@^M\-[0-9]{1,15}$@", $mid)) {
-            return [
-                'error' => 'Hibás M-azonosítót adott meg!',
-            ];
-        }
+        $customer = Vasarlo::findOne(['email' => $email]);
+        if ($customer) {
+            $customer->jelszo_beallito_token = Helpers::random_bytes();
+            $customer->jelszo_beallito_token_idopont = date('Y-m-d H:i:s');
+            $customer->save(false);
 
-        // TODO: Flavon API call
-        try {
-            FlavonApi::call('POST', 'user/' . $mid . '/forgot-password');
-        } catch (\Throwable $e) {
-        
+            // Email küldése
+            EmailSablon::findOne(10)->send(null, $email, [
+                'nev' => $customer->nev,
+                'link' => Helpers::rootUrl() . '/?password_reset_token=' . $customer->jelszo_beallito_token,
+            ]);
         }
 
         return [
-            // 'session' => $session->toApi(),
+            'success_title' => 'Küldtünk egy e-mailt',
+            'success_message' => 'Elküldtük e-mailben a további instrukciókat a megadott címre, amennyiben tartozott hozzá felhasználói fiók!',
         ];
     }
-
 
     public function actionSetAmount() {
         $sessionId = trim(Yii::$app->request->post('sessionId', ''));

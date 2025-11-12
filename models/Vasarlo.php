@@ -23,6 +23,8 @@ use Yii;
  */
 class Vasarlo extends \yii\db\ActiveRecord
 {
+    public static $CURRENT = null;
+
     /**
      * @inheritdoc
      */
@@ -173,5 +175,31 @@ class Vasarlo extends \yii\db\ActiveRecord
                 </span>';
             },
         ];
+    }
+
+    public static function current() {
+        if (self::$CURRENT) {
+            return self::$CURRENT;
+        }
+        $session = VasarloMunkamenet::current();
+        if ($session && $session->customer) {
+            self::$CURRENT = $session->customer;
+        }
+        return $session ? $session->customer : null;
+    }
+
+    public function login() {
+        $session = new VasarloMunkamenet;
+        $session->token = Helpers::random_bytes();
+        $session->letrehozva = date('Y-m-d H:i:s');
+        $session->vasarlo_id = $this->getPrimaryKey();
+        $session->save(false);
+
+        // Set session cookie
+        Yii::$app->response->cookies->add(new \yii\web\Cookie([
+            'name' => 'customer',
+            'value' => $session->token,
+            'expire' => time() + 86400 * 365,
+        ]));
     }
 }

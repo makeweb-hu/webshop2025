@@ -1,6 +1,8 @@
 <?php
 $actionId = Yii::$app->controller->action->uniqueId;
 $metaRenderer = new \app\components\MetaRenderer($actionId);
+
+$pages = \app\models\StatikusOldal::find()->where(['megjelenes'=>'fejlec'])->all();
 ?>
 
 <!DOCTYPE html>
@@ -9,400 +11,342 @@ $metaRenderer = new \app\components\MetaRenderer($actionId);
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
     <?=$metaRenderer->render()?>
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/favicon/site.webmanifest">
-    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
-    <link rel="shortcut icon" href="/favicon/favicon.ico">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-config" content="/favicon/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
-
-    <meta name="google-site-verification" content="dQnCmIZW1I-kVW1mLf7xlucFfVaAlOvo-n50XH8u8-I" />
+    <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
+    <link rel="shortcut icon" href="/favicons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Dragcards" />
+    <link rel="manifest" href="/favicons/site.webmanifest" />
 
     <!-- Style -->
+    <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!--
     <link rel="stylesheet" href="/css/tailwind.css">
-    <link rel="stylesheet" href="/css/borago.css?v=<?=sha1_file('css/borago.css')?>">
+    -->
+    <link rel="stylesheet" href="/css/dragcards.css?v=<?=sha1_file('css/dragcards.css')?>">
 
-    <script src="https://cdn.jsdelivr.net/npm/share-api-polyfill/dist/share-min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"/>
 </head>
 <body>
-<header>
+<?php
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$isScrolled = $path!=='/';
+
+?>
+<header class="<?=$isScrolled?'scrolled':''?>">
     <div class="container">
-        <div class="logo-row">
+        <div class="menu">
+            <div class="hamburger-menu">
+                <img src="/img/dragcards/header/hamburger.svg" alt="Dragcards" />
+            </div>
             <div class="logo">
                 <a href="/">
-                    <img src="/img/logo-header.svg" />
+                    <img class="dark-logo" src="/img/dragcards/logo/logo-color-dark.svg" alt="Dragcards" />
+                    <img class="white-logo" src="/img/dragcards/logo/logo-color-white.svg" alt="Dragcards" />
                 </a>
             </div>
-            <div class="search">
-                <div class="search-box">
-                    <img src="/img/search.svg" />
-                    <div class="search-btn">Keres</div>
-                    <input type="text" placeholder="Keresés az oldalunkon" data-global-search value="<?=trim(Yii::$app->request->get('q', ''))?>" />
+            <div class="menu-items">
+                <span class="menu-item" data-has-product-submenu>
+                    <span class="caption">Termékek</span>
+                </span>
+                <span class="menu-item" data-has-submenu>
+                    <span class="caption">Információ</span>
+                    <div class="submenu">
+                        <img src="/img/dragcards/header-dropdown/corner-left.svg" class="corner-left" />
+                        <img src="/img/dragcards/header-dropdown/corner-right.svg" class="corner-right" />
 
-                    <div class="search-results" data-global-search-results>
+                        <?php foreach ($pages as $page): ?>
 
-                        <a class="search-result" href="#">
+                                <div class="submenu-item"><a href="<?=$page->url?>"><?=$page->cim?></a></div>
 
-                            <div class="photo">
-                                <div class="photo-box">
-                                    <img src="#" />
-                                </div>
-                            </div>
-                            <div class="name">
-                                Ez egy teszt termék..
-                            </div>
-                            <div class="price">
-                                1 250 Ft
-                            </div>
+                        <?php endforeach; ?>
 
-                        </a>
-
-                        <div class="search-result">
-
-                            <div class="photo">
-                                <div class="photo-box">
-                                    <img src="#" />
-                                </div>
-                            </div>
-                            <div class="name">
-                                Ez egy teszt termék..
-                            </div>
-                            <div class="price">
-                                1 250 Ft
-                            </div>
-
-                        </div>
-
+                        <div class="submenu-item"><a href="/site/blog">Blog</a></div>
+                         <div class="submenu-item"><a href="/site/faq">GYIK</a></div>
                     </div>
-                </div>
+                </span>
+                <span class="menu-item">
+                    <a class="caption" href="/site/contact">Kapcsolat</a>
+                </span>
             </div>
             <div class="icons">
-                <a href="#" class="icon cart" data-show-cart>
-                    <img src="/img/cart.svg" />
-                    <span class="nr" data-nr-of-cart-items><?=\app\models\Kosar::nr()?></span>
-                </a>
-                <a href="#" class="icon favorite" data-show-likes>
-                    <img src="/img/favorite.svg" />
-                    <span class="nr" data-nr-of-likes><?=\app\models\Kosar::nrOfLikes()?></span>
-                </a>
-                <a href="mailto:info@borago.hu" target="_blank" class="icon">
-                    <img src="/img/email.svg" />
-                </a>
-                <a href="https://www.facebook.com/boragokerteszet" target="_blank" class="icon">
-                    <img src="/img/facebook.svg" />
-                </a>
+                <span class="icon" data-show-login-modal>
+                    <?php if (\app\models\Vasarlo::current()): ?>
+                        <img src="/img/dragcards/header/profile-2.svg" alt="" />
+                    <?php else: ?>
+                    <img src="/img/dragcards/header/profile.svg" alt="" />
+                    <?php endif; ?>
+                </span>
+                <span class="icon" data-show-cart>
+                    <img src="/img/dragcards/header/cart.svg" alt="" />
+                    <span class="nr" data-nr-of-cart-items style="display: none;">2</span>
+                </span>
             </div>
-        </div>
-        <div class="menu">
-            <?php foreach (\app\models\Kategoria::find()->where('szulo_id is null')->orderBy('sorrend ASC')->all() as $mainCat): ?>
 
-            <div class="menu-item <?=count($mainCat->children) > 0 ? 'has-submenu' : ''?>">
-                <a href="<?=count($mainCat->children) == 0 ? $mainCat->getUrl() : 'javascript:void(0)'?>"><?=$mainCat->nev?></a>
-                <?php if (count($mainCat->children) > 0): ?>
-                    <img src="/img/menu-arrow.svg" class="arrow" />
-                <?php endif; ?>
-                <div class="submenu">
-                    <?php foreach ($mainCat->children as $childCat): ?>
-                    <div class="submenu-item">
-                        <a href="<?=$childCat->getUrl()?>"><?=$childCat->nev?></a>
+            <div class="product-submenu ">
+                <img src="/img/dragcards/header-dropdown/corner-left.svg" class="corner-left" />
+                <img src="/img/dragcards/header-dropdown/corner-right.svg" class="corner-right" />
+                <div class="columns">
+                    <div class="column">
+                        <a href="/kartyak">
+                            <div class="card">
+                                <div class="image">
+                                    <img src="/img/dragcards/prod-menu-1.png" alt="Dragcards" />
+                                </div>
+                                <div class="title">
+                                    <span class="text">Kártyák</span>
+                                    <span class="arrow">
+                                                <img src="/img/dragcards/header-dropdown/arrow.svg" alt="Dragcards" />
+                                            </span>
+                                </div>
+                                <div class="desc">
+                                    Megnézem a termékeket
+                                </div>
+                            </div>
+                        </a>
                     </div>
+
+                    <div class="column">
+                        <a href="/tablak">
+                            <div class="card">
+                                <div class="image">
+                                    <img src="/img/dragcards/prod-menu-2.png" alt="Dragcards" />
+                                </div>
+                                <div class="title">
+                                    <span class="text">Táblák</span>
+                                    <span class="arrow">
+                                                <img src="/img/dragcards/header-dropdown/arrow.svg" alt="Dragcards" />
+                                            </span>
+                                </div>
+                                <div class="desc">
+                                    Megnézem a termékeket
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="column">
+                        <a href="/csomagok">
+                            <div class="card">
+                                <div class="image">
+                                    <img src="/img/dragcards/prod-menu-3.png" alt="Dragcards" />
+                                </div>
+                                <div class="title">
+                                    <span class="text">Csomagok</span>
+                                    <span class="arrow">
+                                                <img src="/img/dragcards/header-dropdown/arrow.svg" alt="Dragcards" />
+                                            </span>
+                                </div>
+                                <div class="desc">
+                                    Megnézem a termékeket
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="mobile-menu">
+
+                    <?php foreach ($pages as $page): ?>
+                        <a href="<?=$page->url?>"><?=$page->cim?></a>
                     <?php endforeach; ?>
+
+                    <a href="/site/blog">Blog</a>
+                    <a href="/site/faq">GYIK</a>
+                    <a href="/site/contact">Kapcsolat</a>
                 </div>
             </div>
-
-            <?php endforeach; ?>
-
-            <div class="menu-item">
-                <a href="/termekek?discounted=1">Akciók</a>
-            </div>
-
-            <div class="menu-item">
-                <a href="/termekek?new=1">Újdonságok</a>
-            </div>
-
-            <?php foreach (\app\models\StatikusOldal::find()->where(['megjelenes' => 'fejlec'])->all() as $page): ?>
-                <div class="menu-item">
-                    <a href="/<?=$page->page->url?>"><?=$page->cim?></a>
-                </div>
-            <?php endforeach; ?>
-
         </div>
     </div>
 </header>
 
-
-<div data-cart  style="z-index: 50; transition: 0.3s; opacity: 0; visibility: hidden;" class="fixed inset-0 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 overflow-hidden">
-        <!--
-          Background overlay, show/hide based on slide-over state.
-
-          Entering: "ease-in-out duration-500"
-            From: "opacity-0"
-            To: "opacity-100"
-          Leaving: "ease-in-out duration-500"
-            From: "opacity-100"
-            To: "opacity-0"
-        -->
-        <div data-close-cart class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
-            <!--
-              Slide-over panel, show/hide based on slide-over state.
-
-              Entering: "transform transition ease-in-out duration-500 sm:duration-700"
-                From: "translate-x-full"
-                To: "translate-x-0"
-              Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
-                From: "translate-x-0"
-                To: "translate-x-full"
-            -->
-            <div class="w-screen max-w-md" style="transform: translateX(100%); transition: 0.3s">
-                <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
-                    <div class="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
-                        <div class="flex items-start justify-between">
-                            <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
-                                Kosár tartalma
-                            </h2>
-                            <div class="ml-3 h-7 flex items-center">
-                                <button data-close-cart type="button" class="-m-2 p-2 text-gray-400 hover:text-gray-500">
-                                    <span class="sr-only">Close panel</span>
-                                    <!-- Heroicon name: outline/x -->
-                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="mt-8">
-                            <div class="flow-root">
-                                <ul role="list" class="-my-6 divide-y divide-gray-200" data-cart-html>
-
-                                    <?=Yii::$app->controller->renderPartial('_cart')?>
-                                    <!-- More products... -->
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-gray-200 py-6 px-4 sm:px-6">
-                        <div class="flex justify-between text-base font-medium text-gray-900">
-                            <p>Összesen</p>
-                            <p data-cart-total><?=\app\components\Helpers::formatMoney(\app\models\Kosar::current(true)->getItemsTotal())?></p>
-                        </div>
-                        <p class="mt-0.5 text-sm text-gray-500"></p>
-
-                        <div class="mt-6" data-goto-checkout style="<?=\app\models\Kosar::nr() == 0 ? 'pointer-events:none;opacity:0.4':''?>">
-                            <a href="/site/checkout" class="flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">Pénztárhoz</a>
-                        </div>
-
-                        <div class="mt-6 flex justify-center text-sm text-center text-gray-500">
-                            <p>
-                                <button type="button" class="text-indigo-600 font-medium hover:text-indigo-500" data-close-cart>Vásárlás folytatása<span aria-hidden="true"> &rarr;</span></button>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div data-likes  style="z-index: 50; transition: 0.3s; opacity: 0; visibility: hidden;" class="fixed inset-0 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 overflow-hidden">
-        <!--
-          Background overlay, show/hide based on slide-over state.
-
-
-          Entering: "ease-in-out duration-500"
-            From: "opacity-0"
-            To: "opacity-100"
-          Leaving: "ease-in-out duration-500"
-            From: "opacity-100"
-            To: "opacity-0"
-        -->
-        <div data-close-likes class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
-            <!--
-              Slide-over panel, show/hide based on slide-over state.
-
-              Entering: "transform transition ease-in-out duration-500 sm:duration-700"
-                From: "translate-x-full"
-                To: "translate-x-0"
-              Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
-                From: "translate-x-0"
-                To: "translate-x-full"
-            -->
-            <div class="w-screen max-w-md" style="transform: translateX(100%); transition: 0.3s">
-                <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
-                    <div class="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
-                        <div class="flex items-start justify-between">
-                            <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
-                                Kedvencek
-                            </h2>
-                            <div class="ml-3 h-7 flex items-center">
-                                <button data-close-likes type="button" class="-m-2 p-2 text-gray-400 hover:text-gray-500">
-                                    <span class="sr-only">Close panel</span>
-                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="mt-8">
-                            <div class="flow-root">
-                                <ul role="list" class="-my-6 divide-y divide-gray-200" data-likes-html>
-
-                                    <?=Yii::$app->controller->renderPartial('_likes')?>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-gray-200 py-6 px-4 sm:px-6">
-
-                        <div class="flex justify-center text-sm text-center text-gray-500">
-                            <p>
-                                <button type="button" class="text-indigo-600 font-medium hover:text-indigo-500" data-close-likes>Vásárlás folytatása<span aria-hidden="true"> &rarr;</span></button>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="submenu-fade"></div>
 
 <?=$content?>
-
 <footer>
-    <div class="container">
-        <div class="news">
-            <div class="column">
-                <div class="photo">
-                    <div class="photo-container">
-                        <img src="/img/sample/news-1.jpg" />
+    <div class="light-section">
+        <div class="container">
+            <div class="columns">
+                <div class="column">
+                    <div class="icon">
+                        <img src="/img/dragcards/footer-top/users.svg" alt="Dragcards" />
                     </div>
-                    <div class="inner-circle"></div>
-                </div>
-                <div class="text">
-                    <div class="category">
-                        <?=\app\models\StatikusSzoveg::get('Lábléc alcím 1')?>
-                    </div>
-                    <div class="title">
-                        <?=\app\models\StatikusSzoveg::get('Lábléc cím 1')?>
-                    </div>
-                    <div class="description">
-                        <?=\app\models\StatikusSzoveg::get('Lábléc leírás 1')?>
-                    </div>
-                    <div class="button-row">
-                        <a href="<?=\app\models\StatikusSzoveg::get('Lábléc link 1')?>">Részletek</a>
+                    <div class="text">
+                        <div class="title">Kapcsolódj bárki felé</div>
+                        <div class="desc">Elég, ha csak az egyik félnek van Dragcards kártyája – a kapcsolatfelvétel máris elindulhat.</div>
                     </div>
                 </div>
-            </div>
-            <div class="column">
-                <div class="photo">
-                    <div class="photo-container">
-                        <img src="/img/sample/news-2.jpg" />
+
+                <div class="column">
+                    <div class="icon">
+                        <img src="/img/dragcards/footer-top/phone.svg" alt="Dragcards" />
                     </div>
-                    <div class="inner-circle"></div>
+                    <div class="text">
+                        <div class="title">Nincs szükség applikációra</div>
+                        <div class="desc">Egyszerűen böngészőn keresztül megoszthatod az elérhetőségeidet.</div>
+                    </div>
                 </div>
-                <div class="text">
-                    <div class="category">
-                        <?=\app\models\StatikusSzoveg::get('Lábléc alcím 2')?>
+
+                <div class="column">
+                    <div class="icon">
+                        <img src="/img/dragcards/footer-top/platforms.svg" alt="Dragcards" />
                     </div>
-                    <div class="title">
-                        <?=\app\models\StatikusSzoveg::get('Lábléc cím 2')?>
+                    <div class="text">
+                        <div class="title">Működik minden telefonnal</div>
+                        <div class="desc">Teljes kompatibilitás iOS és Android készülékekkel.</div>
                     </div>
-                    <div class="description">
-                        <?=\app\models\StatikusSzoveg::get('Lábléc leírás 2')?>
+                </div>
+
+                <div class="column">
+                    <div class="icon">
+                        <img src="/img/dragcards/footer-top/customize.svg" alt="Dragcards" />
                     </div>
-                    <div class="button-row">
-                        <a href="<?=\app\models\StatikusSzoveg::get('Lábléc link 2')?>">Részletek</a>
+                    <div class="text">
+                        <div class="title">Teljes testreszabhatóság</div>
+                        <div class="desc">Válaszd ki a stílust, színeket és adatokat – a kártyád pont olyan lesz, amilyenre szükséged van.</div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="main-footer">
-            <div class="column logo">
-                <a href="/">
-                    <img src="/img/logo-footer.svg" />
-                </a>
-            </div>
-            <div class="column">
-                <div class="section-title">Menü</div>
-                <?php foreach (\app\models\StatikusOldal::find()->where(['megjelenes' => 'fejlec'])->all() as $page): ?>
-                    <div class="menu-item">
-                        <a href="/<?=$page->page->url?>"><?=$page->cim?></a>
+    </div>
+    <div class="dark-section">
+        <div class="container">
+            <div class="columns">
+                <div class="column first-column">
+                    <div class="logo-row">
+                        <a href="/"><img src="/img/dragcards/logo/logo-white.svg" alt="Dragcards" /></a>
                     </div>
-                <?php endforeach; ?>
-            </div>
-            <div class="column">
-                <div class="section-title">Információ</div>
-                <?php foreach (\app\models\StatikusOldal::find()->where(['megjelenes' => 'lablec'])->all() as $page): ?>
-                <div class="menu-item">
-                    <a href="/<?=$page->page->url?>"><?=$page->cim?></a>
+                    <form data-ajax-form data-action="/subscribe" class="newsletter">
+                        <div class="title">
+                            Ne maradj le semmiről!<br/>
+                            Iratkozz fel!
+                        </div>
+                        <div class="input-box">
+                            <input type="text" placeholder="E-mail címed" />
+                            <button class="btn" type="submit">OK</button>
+                        </div>
+                        <label class="gdpr">
+                            <span class="checkbox">
+                                <input type="checkbox" />
+                            </span>
+                            <span class="text">
+                                Elolvastam és elfogadom az <a href="/adatkezelesi-tajekoztato" target="_blank">Adatkezelési tájékoztató</a>
+                                tartalmát.
+                            </span>
+                        </label>
+                    </form>
                 </div>
-                <?php endforeach; ?>
-            </div>
-            <div class="column">
-                <div class="section-title">Kapcsolat</div>
-                <div class="menu-item with-icon">
-                    <a href="tel:<?=\app\models\Beallitasok::get('kozponti_telefonszam')?>">
-                        <img src="/img/phone.svg" />
-                        <span class="text">Telefon: <?=\app\models\Beallitasok::get('kozponti_telefonszam')?></span>
-                    </a>
+                <div class="column second-column">
+                    <div class="section-title">Termékek</div>
+                    <div class="section">
+                        <div class="menu-item">
+                            <a href="/kartyak">Kártyák</a>
+                        </div>
+                        <div class="menu-item">
+                            <a href="/tablak">Táblák</a>
+                        </div>
+                        <div class="menu-item">
+                            <a href="/csomagok">Csomagok</a>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Információ</div>
+                    <div class="section">
+                        <?php foreach ($pages as $page): ?>
+                            <div class="menu-item">
+                                <a href="<?=$page->url?>"><?=$page->cim?></a>
+                            </div>
+                        <?php endforeach; ?>
+
+                        <div class="menu-item">
+                            <a href="/site/blog">Blog</a>
+                        </div>
+
+                        <div class="menu-item">
+                            <a href="/site/faq">GYIK</a>
+                        </div>
+
+                        <div class="menu-item">
+                            <a href="/site/contact">Kapcsolat</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="menu-item with-icon">
-                    <a href="mailto:<?=\app\models\Beallitasok::get('kozponti_email')?>">
-                        <img src="/img/email.svg" />
-                        <span class="text">E-mail: <?=\app\models\Beallitasok::get('kozponti_email')?></span>
-                    </a>
+                <div class="column third-column">
+                    <div class="section-title">Kapcsolat</div>
+                    <div class="menu-item-with-caption">
+                        <div class="caption">Értékesítés:</div>
+                        <a href="tel:+36707701841">+36 70 770 1841</a>
+                    </div>
+                    <div class="menu-item-with-caption">
+                        <div class="caption">Technikai segítség:</div>
+                        <a href="tel:+36706112000">+36 70 611 2000</a>
+                    </div>
+                    <div class="menu-item-with-caption">
+                        <div class="caption">Ügyfélszolgálat:</div>
+                        <a href="mailto:info@dragcards.com">info@dragcards.com</a>
+                    </div>
+                    <div class="menu-item-with-caption">
+                        <div class="caption">Cím:</div>
+                        <a href="https://www.google.com/maps/place/netnyomda.hu/@47.9568254,21.6714455,17z/data=!3m1!4b1!4m6!3m5!1s0x47389f8f12e18cdf:0x7a6e8078c227441a!8m2!3d47.9568218!4d21.6740204!16s%2Fg%2F11g7_7ccgc?entry=ttu&g_ep=EgoyMDI1MTAxNC4wIKXMDSoASAFQAw%3D%3D" target="_blank">4400 Nyíregyháza,<br/>
+                            Tiszavasvári út 40.</a>
+                    </div>
                 </div>
-                <?php if (\app\models\Beallitasok::get('ceg_cim_id')): ?>
-                <div class="menu-item with-icon">
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=<?=urlencode(\app\models\Cim::findOne(\app\models\Beallitasok::get('ceg_cim_id'))->toString())?>" target="_blank">
-                        <img src="/img/address.svg" />
-                        <span class="text">Cím: <?=\app\models\Cim::findOne(\app\models\Beallitasok::get('ceg_cim_id'))->toString()?></span>
-                    </a>
-                </div>
-                <?php endif; ?>
             </div>
-        </div>
-        <div class="copyright">
-            <div class="left">
-                Copyright © www.borago.hu.  Minden jog fentartva!
-            </div>
-            <div class="right">
-                <a href="https://makeweb.hu" target="_blank">
-                    <img src="/img/makeweb-footer.svg" />
+            <div class="social-icons">
+                <a href="https://www.instagram.com/dragcards/" target="_blank" class="icon">
+                    <img src="/img/dragcards/footer/insta.svg" alt="Dragcards" />
                 </a>
+                <a href="https://www.youtube.com/@dragcards6436" target="_blank" class="icon">
+                    <img src="/img/dragcards/footer/yt.svg" alt="Dragcards" />
+                </a>
+                <a href="https://www.tiktok.com/@dragcardseu" target="_blank" class="icon">
+                    <img src="/img/dragcards/footer/tiktok.svg" alt="Dragcards" />
+                </a>
+                <!--
+                <a href="#" class="icon">
+                    <img src="/img/dragcards/footer/pinterest.svg" alt="Dragcards" />
+                </a>
+                <a href="#" class="icon">
+                    <img src="/img/dragcards/footer/linkedin.svg" alt="Dragcards" />
+                </a>
+                -->
+                <a href="https://www.facebook.com/dragcards" target="_blank" class="icon">
+                    <img src="/img/dragcards/footer/fb.svg" alt="Dragcards" />
+                </a>
+            </div>
+            <div class="copyright-row">
+                <div class="left">
+                    &copy; 2025 Dragcards.eu
+                </div>
+                <div class="right">
+                    <img src="/img/dragcards/footer/stripe.svg" class="stripe" />
+                    <img src="/img/dragcards/footer/cards.svg" class="cards" />
+                </div>
+            </div>
+            <div class="info-row">
+                <a href="/altalanos-szerzodesi-feltetelek" class="info-item">Általános szerződési feltételek</a>
+                <a href="/adatkezelesi-tajekoztato" class="info-item">Adatkezelési tájékoztató</a>
+                <a href="/impresszum" class="info-item">Impresszum</a>
             </div>
         </div>
     </div>
 </footer>
 
 <?=Yii::$app->controller->renderPartial('@app/themes/main/layouts/_cookie_consent')?>
+<?=Yii::$app->controller->renderPartial('@app/themes/main/layouts/_login')?>
+<?=Yii::$app->controller->renderPartial('@app/themes/main/layouts/_signup')?>
+<?=Yii::$app->controller->renderPartial('@app/themes/main/layouts/_forgot_pass')?>
 
-<script src="/js/borago.js?v=<?=sha1_file('js/borago.js')?>"></script>
+<script src="/js/jquery-3.2.1.min.js"></script>
+<script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="/js/dragcards.js?v=<?=sha1_file('js/dragcards.js')?>"></script>
 </body>
 </html>

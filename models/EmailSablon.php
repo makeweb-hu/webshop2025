@@ -198,11 +198,14 @@ class EmailSablon extends \yii\db\ActiveRecord
         return [];
     }
 
-    public function send($orderId, $toEmail, $attachment = '') {
+    public function send($orderId, $toEmail, $extraData = [], $attachment = null) {
         $order = Kosar::findOne($orderId);
 
         $template = $this;
-        $testData = $order->getDataForEmailTemplate();
+        $testData = array_merge($order ? $order->getDataForEmailTemplate() : [], $extraData);
+        $testData = array_merge($testData, [
+            //'alairas' => Beallitasok::get('email_sablon_alairas'),
+        ]);
 
         try {
             Helpers::setSmpt();

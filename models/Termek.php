@@ -46,7 +46,7 @@ class Termek extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['nev', 'egyseg_id'], 'required'],
+            [['nev', 'egyseg_id', 'kategoria_id'], 'required'],
             [['cikkszam'], 'unique'],
             [['oldal_id', 'foto_id', 'ar', 'akcios', 'akcios_ar', 'akcio_szazalek', 'afa', 'statusz', 'kategoria_id', 'keszlet'], 'integer'],
             [['akcio_tipusa', 'rovid_leiras', 'leiras'], 'string'],
@@ -154,7 +154,7 @@ class Termek extends \yii\db\ActiveRecord
     public function getThumbnail() {
         $f = $this->photo;
         if ($f) {
-            return $f->resizePhotoCover(320, 320);
+            return $f->resizePhotoCover(800, 800);
         }
         return '/img/no-photo.jpg';
     }

@@ -17,6 +17,7 @@ use app\components\TwoFactorAuth;
 use app\models\Beallitasok;
 use app\models\Fajl;
 use app\models\Felhasznalo;
+use app\models\Hir;
 use app\models\Kategoria;
 use app\models\Kosar;
 use app\models\StatikusOldal;
@@ -57,9 +58,16 @@ class SiteController extends \yii\web\Controller {
         return $this->render('index');
     }
 
+    public function actionBlog()
+    {
+        return $this->render('blog');
+    }
+
     public function actionBlogPost($id)
     {
-        return $this->render('index');
+        return $this->render('blog-post', [
+            'model' => Hir::findOne($id),
+        ]);
     }
 
 
@@ -94,6 +102,18 @@ class SiteController extends \yii\web\Controller {
     public function actionProducts() {
         return $this->render('category', [
             'model' => null,
+        ]);
+    }
+
+    public function actionContact() {
+        return $this->render('contact', [
+
+        ]);
+    }
+
+    public function actionFaq() {
+        return $this->render('faq', [
+
         ]);
     }
 
