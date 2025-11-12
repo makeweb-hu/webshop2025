@@ -74,6 +74,13 @@ class SiteController extends \yii\web\Controller {
     public function actionCheckout()
     {
         $this->layout = 'checkout';
+        $cart = Kosar::current();
+        if (!$cart) {
+            return $this->redirect('/');
+        }
+        if (count($cart->items) === 0) {
+            return $this->redirect('/');
+        }
         return $this->render('checkout');
     }
 

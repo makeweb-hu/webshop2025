@@ -33,7 +33,7 @@ if (!$cart) {
                     <span data-close-cart="">Vásárlok még</span>
                 </div>
                 <div data-goto-checkout="" class="button-row active">
-                    <a href="/checkout.php" style="<?=count($items)===0?'pointer-events: none;opacity:0.4;':''?>">Tovább a fizetéshez</a>
+                    <a href="/site/checkout" style="<?=count($items)===0?'pointer-events: none;opacity:0.4;':''?>">Tovább a fizetéshez</a>
                 </div>
             </div>
 

@@ -73,3 +73,10 @@ if (!$cart) {
 
 <?php endforeach; ?>
 
+<?php if (count($items) == 0): ?>
+
+<div class="sidebar-product">
+    A kosár üres.
+</div>
+
+<?php endif; ?>

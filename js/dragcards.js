@@ -204,11 +204,103 @@ LIVE_HTML.add('[data-delete-cart-item]', function () {
     })
 });
 
-LIVE_HTML.add('[data-delete-cart-item]', function () {
+LIVE_HTML.add('[data-cart-item-plus]', function () {
     $(this).click(function () {
-
         $.post("/api/change-cart-amount", {
             id: $(this).closest('[data-cart-item]').data("item-id"),
+            amount: Number($(this).closest('[data-cart-item]').find('[data-cart-item-amount]').text()) + 1,
+        }).then(function (response) {
+            $('[data-cart-html]').html(response.html);
+            LIVE_HTML.update($('[data-cart-html]'));
+            $('[data-nr-of-cart-items]').html(response.nr_of_items);
+            $('[data-cart-total]').html(response.total);
+            $('[data-goto-checkout] > a').css(response.nr_of_items == 0 ? {
+                'pointer-events': 'none',
+                'opacity': '0.4',
+            } : {
+                'opacity': '1',
+                'pointer-events': 'all',
+            });
+        });
+    })
+});
+
+
+// Payment and shipping
+(function () {
+
+    function updateSameAsShipping() {
+        if ($('[data-same-as-shipping]').prop('checked')) {
+            $('[data-billing-data]').hide();
+            // Copy data
+            $('input[name="billing_name"]').val( $('input[name="shipping_name"]').val() );
+            $('input[name="billing_zip"]').val( $('input[name="shipping_zip"]').val() );
+            $('input[name="billing_city"]').val( $('input[name="shipping_city"]').val() );
+            $('input[name="billing_street"]').val( $('input[name="shipping_street"]').val() );
+        } else {
+            $('[data-billing-data]').show();
+        }
+    }
+
+    if ($('[data-same-as-shipping]')[0]) {
+        setInterval(updateSameAsShipping, 1000);
+    }
+
+    $('body').on('click', '[data-method]', function () {
+        $(this).closest('fieldset').find('[data-method]').removeClass('active');
+        $(this).addClass('active');
+        var id = $(this).data('id');
+        if ($(this).data('field-name') == 'shipping') {
+            $('input[name="shipping"]').val(id);
+
+            $.post('/api/change-shipping-method', {
+                id: id,
+            }, function (response) {
+                $('[data-payment-methods]').html(response.html);
+                $('[data-shipping-price]').html(response.shipping_price);
+                $('[data-total]').html(response.total);
+            });
+        } else {
+            $('input[name="payment"]').val(id);
+            $.post('/api/change-payment-method', {
+                id: id,
+            }, function (response) {
+                $('[data-shipping-price]').html(response.shipping_price);
+                $('[data-total]').html(response.total);
+            });
+        }
+    });
+
+    var orderLoading = false;
+
+    $('[data-checkout-form]').submit(function (e) {
+        e.preventDefault();
+
+        if (orderLoading) {
+            return;
+        }
+
+        $('button[type="submit"]').html('Kérjük, várjon...');
+
+        orderLoading = true;
+
+        var data = {};
+        $('input, textarea').each(function () {
+            data[$(this).attr('name')] = $(this).val();
+        });
+
+        $.post('/api/order', data, function (response) {
+            window.location.href = response.redirect_url;
+        });
+    })
+
+}());
+
+LIVE_HTML.add('[data-cart-item-minus]', function () {
+    $(this).click(function () {
+        $.post("/api/change-cart-amount", {
+            id: $(this).closest('[data-cart-item]').data("item-id"),
+            amount: Number($(this).closest('[data-cart-item]').find('[data-cart-item-amount]').text()) - 1,
         }).then(function (response) {
             $('[data-cart-html]').html(response.html);
             LIVE_HTML.update($('[data-cart-html]'));

@@ -7,6 +7,7 @@ use app\components\FlavonApi;
 use app\components\Lang;
 use app\components\Push;
 use app\components\Stripe;
+use app\components\Validator;
 use App\Helpers\FlavonApiHelper;
 use app\models\Beallitasok;
 use App\Models\Category;
@@ -311,6 +312,10 @@ class ApiController extends \yii\web\Controller
 
         $cart = Kosar::current(true);
 
+        if ($amount < 1) {
+            $amount = 1;
+        }
+
         $item = KosarTetel::findOne($id);
         $item->mennyiseg = $amount;
         $item->save(false);
@@ -419,39 +424,74 @@ class ApiController extends \yii\web\Controller
             return [];
         }
 
-        $name = trim(Yii::$app->request->post('name', ''));
-        $email = trim(Yii::$app->request->post('email', ''));
-        $phone = trim(Yii::$app->request->post('phone', ''));
+        $validator = new Validator([
+            'name' => 'required|max_len:200',
+            'email' => 'required|max_len:200',
+            'phone' => 'required|max_len:200',
 
-        $shipping = intval(trim(Yii::$app->request->post('shipping', '')));
-        $payment = intval(trim(Yii::$app->request->post('payment', '')));
+            'shipping' => 'required',
+            'payment' => 'required',
 
-        $shipping_name = trim(Yii::$app->request->post('shipping_name', ''));
-        $shipping_zip = trim(Yii::$app->request->post('shipping_zip', ''));
-        $shipping_city = trim(Yii::$app->request->post('shipping_city', ''));
-        $shipping_street = trim(Yii::$app->request->post('shipping_street', ''));
+            'shipping_name' => 'required|max_len:200',
+            'shipping_country' => 'required',
+            'shipping_zip' => 'required|max_len:200',
+            'shipping_city' => 'required|max_len:200',
+            'shipping_street' => 'required|max_len:200',
 
-        $billing_name = trim(Yii::$app->request->post('billing_name', ''));
-        $billing_zip = trim(Yii::$app->request->post('billing_zip', ''));
-        $billing_city = trim(Yii::$app->request->post('billing_city', ''));
-        $billing_street = trim(Yii::$app->request->post('billing_street', ''));
-        $billing_tax_number = trim(Yii::$app->request->post('billing_tax_number', ''));
+            'billing_name' => 'required|max_len:200',
+            'billing_country' => 'required',
+            'billing_zip' => 'required|max_len:200',
+            'billing_city' => 'required|max_len:200',
+            'billing_street' => 'required|max_len:200',
+            'billing_tax_number' => 'optional',
 
-        $comment = trim(Yii::$app->request->post('comment', ''));
+            'comment' => 'optional',
+
+            'accept1' => 'must_accept',
+            'accept2' => 'must_accept',
+        ]);
+        if (!$validator->validate()) {
+            return $validator->getErrors();
+        }
+
+        $name = trim($validator->name);
+        $email = trim($validator->email);
+        $phone = trim($validator->phone);
+
+        $shipping = intval(trim($validator->shipping));
+        $payment = intval(trim($validator->payment));
+
+        $shipping_name = trim($validator->shipping_name);
+        $shipping_country = trim($validator->shipping_country);
+        $shipping_zip = trim($validator->shipping_zip);
+        $shipping_city = trim($validator->shipping_city);
+        $shipping_street = trim($validator->shipping_street);
+
+        $billing_name = trim($validator->billing_name);
+        $billing_country = trim($validator->billing_country);
+        $billing_zip = trim($validator->billing_zip);
+        $billing_city = trim($validator->billing_city);
+        $billing_street = trim($validator->billing_street);
+        $billing_tax_number = trim($validator->billing_tax_number);
+
+        $comment = trim($validator->comment);;
 
         $customer = Vasarlo::findOne(['email' => $email]);
+        $isNewCustomer = false;
         if (!$customer) {
+            $isNewCustomer = true;
             $customer = new Vasarlo;
             $customer->nev = $name;
             $customer->email = $email;
             $customer->telefonszam = $phone;
+            $customer->jelszo_hash = password_hash('FIRST_OrDeR_001*', PASSWORD_DEFAULT);
             $customer->save(false);
         }
 
         $shippingAddress = new Cim;
         $shippingAddress->nev = $shipping_name;
         $shippingAddress->iranyitoszam = $shipping_zip;
-        $shippingAddress->orszag_id = 1; // Hungary
+        $shippingAddress->orszag_id = $shipping_country;
         $shippingAddress->telepules = $shipping_city;
         $shippingAddress->utca = $shipping_street;
         $shippingAddress->save(false);
@@ -459,15 +499,17 @@ class ApiController extends \yii\web\Controller
         $billingAdddress = new Cim;
         $billingAdddress->nev = $billing_name;
         $billingAdddress->iranyitoszam = $billing_zip;
-        $billingAdddress->orszag_id = 1; // Hungary
+        $billingAdddress->orszag_id = $billing_country;
         $billingAdddress->telepules = $billing_city;
         $billingAdddress->utca = $billing_street;
         $billingAdddress->adoszam = $billing_tax_number;
         $billingAdddress->save(false);
 
+        $customer->telefonszam = $phone;
         $customer->szallitasi_cim_id  = $shippingAddress->getPrimaryKey();
         $customer->szamlazasi_cim_id  = $billingAdddress->getPrimaryKey();
         $customer->save(false);
+
 
         // Freeze items data
         foreach ($cart->items as $item) {
@@ -476,11 +518,11 @@ class ApiController extends \yii\web\Controller
             $item->save(false);
         }
 
-        $cart->rendelesszam = 'ORD' . Helpers::nextOrderNumber();
+
+        $cart->rendelesszam = 'ORD' . Helpers::randomOrderNumber();
         $cart->nev = $name;
         $cart->email = $email;
         $cart->telefonszam = $phone;
-        $cart->megrendelve = 1;
         $cart->fizetes_id = $payment;
         $cart->szallitas_id = $shipping;
         $cart->megjegyzes = $comment;
@@ -488,12 +530,13 @@ class ApiController extends \yii\web\Controller
         $cart->vasarlo_id = $customer->getPrimaryKey();
         $cart->szallitasi_cim_id = $shippingAddress->getPrimaryKey();
         $cart->szamlazasi_cim_id = $billingAdddress->getPrimaryKey();
-        $cart->szallitasi_dij = Szallitas::findOne($shipping)->ar ?: 0;
+        $cart->szallitasi_dij = $cart->getShippingPrice();
         $cart->fizetesi_dij = 0;
         $cart->kedvezmeny = 0;
         $cart->szallitasi_dij_afa = 0;
         $cart->fizetesi_dij_afa = 0;
         $cart->kedvezmeny_afa = 0;
+        $cart->megrendelve = 1;
         $cart->megrendeles_idopontja = date('Y-m-d H:i:s');
         $cart->save(false);
 
@@ -506,14 +549,22 @@ class ApiController extends \yii\web\Controller
         // E-mail küldés (vásárló)
         EmailSablon::findOne(1)->send($cart->getPrimaryKey(), $email);
 
+        if ($isNewCustomer) {
+            $customer->login(); // Felhasználó beléptetése
+        }
+
         // E-mail küldés (admin)
-        EmailSablon::findOne(2)->send($cart->getPrimaryKey(), 'borago.74@gmail.com');
-        //EmailSablon::findOne(2)->send($cart->getPrimaryKey(), 'gmenyhert92@gmail.com');
+        $notify_users = Felhasznalo::find()->where(['ertesites' => 1])->all();
+        foreach ($notify_users as $notify_user) {
+            EmailSablon::findOne(2)->send($cart->getPrimaryKey(), $notify_user->email);
+        }
 
         return [
-            'redirect_url' => '/site/ordered?number=' . $cart->rendelesszam,
+            'redirect_url' => '/site/order?token=' . $cart->token,
         ];
     }
+
+
 
     public function actionSubmitOrder() {
         $sessionId = trim(Yii::$app->request->post('sessionId', ''));
